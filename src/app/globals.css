@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   ZWA design tokens. Colors are stored as HSL channel triplets so Tailwind's
+   hsl(var(--token)) mapping (see tailwind.config.ts) works cleanly.
+   ============================================================================ */
+:root {
+  /* Backgrounds */
+  --zwa-cream: 43 58% 95%; /* page background #FAF6EC */
+  --zwa-panel: 43 80% 93%; /* warm panels / cards #FCF3DC */
+
+  /* Primary navy */
+  --zwa-navy: 203 43% 21%; /* #1E3A4C */
+  --zwa-navy-hover: 204 57% 18%; /* #14344A */
+
+  /* Accents */
+  --zwa-gold: 41 54% 54%; /* #C9A24B */
+  --zwa-green: 110 45% 43%; /* #4E9F3D */
+
+  /* Text */
+  --zwa-text: 0 0% 10%; /* #1A1A1A */
+  --zwa-muted: 220 9% 46%; /* #6B7280 */
+  --zwa-border: 43 30% 85%;
+
+  /* Verification chips */
+  --chip-verified-bg: 123 39% 93%;
+  --chip-verified-fg: 123 46% 34%;
+  --chip-staff-bg: 268 100% 95%;
+  --chip-staff-fg: 273 67% 39%;
+  --chip-unverified-bg: 44 93% 94%;
+  --chip-unverified-fg: 26 90% 37%;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    background-color: hsl(var(--zwa-cream));
+    color: hsl(var(--zwa-text));
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading), system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-navy {
+    @apply inline-flex items-center justify-center gap-2 rounded-btn bg-navy px-4 py-2
+      text-sm font-semibold text-white transition-colors hover:bg-navy-hover
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/40
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-btn bg-gold px-4 py-2
+      text-sm font-semibold text-white transition-colors hover:brightness-95
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/40;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-btn border border-navy/25
+      bg-white px-4 py-2 text-sm font-semibold text-navy transition-colors
+      hover:bg-navy/5 focus-visible:outline-none focus-visible:ring-2
+      focus-visible:ring-navy/30;
+  }
+
+  /* Verification chips */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .chip-verified {
+    background-color: hsl(var(--chip-verified-bg));
+    color: hsl(var(--chip-verified-fg));
+  }
+  .chip-staff {
+    background-color: hsl(var(--chip-staff-bg));
+    color: hsl(var(--chip-staff-fg));
+  }
+  .chip-unverified {
+    background-color: hsl(var(--chip-unverified-bg));
+    color: hsl(var(--chip-unverified-fg));
+  }
+}
+
+/* Mapbox popup restyle to read as a ZWA card. */
+.mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+.mapboxgl-popup-close-button {
+  right: 6px;
+  top: 6px;
+  font-size: 18px;
+  color: #ffffff;
+  z-index: 10;
+}
+.mapboxgl-popup-tip {
+  display: none;
+}
+
+/* Utility for line clamping (Tailwind ships line-clamp but keep a safe fallback). */
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
