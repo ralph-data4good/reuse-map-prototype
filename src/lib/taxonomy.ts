@@ -133,7 +133,7 @@ export const COPY = {
   siteTitle: "Reuse Solutions",
   pageTitle: "Mapping Reuse Solutions",
   intro:
-    "Explore reuse, refill, and second-hand solutions across Asia-Pacific. Start on the map to see where solutions are based, then switch to the gallery or table for the full details. Use the filters to narrow by country, reuse category, or nature of service, and click any pin to see the provider behind it.",
+    "Across Asia-Pacific, businesses, cooperatives, and local groups are building practical alternatives to single-use, from refill stations and container-return schemes to repair and second-hand networks. This directory gathers those reuse solutions in one place, so you can see what already works and connect with the people behind them. Start on the map to find where solutions operate, switch to the gallery or table for the full details, and filter by country, reuse category, nature of service, or affiliation. Know a solution that belongs here? Add it and help the map grow.",
   tagline: "Explore reuse, refill, and second-hand solutions across Asia-Pacific.",
   searchPlaceholder: "Search reuse solutions",
   refinePanelTitle: "Refine Results",
