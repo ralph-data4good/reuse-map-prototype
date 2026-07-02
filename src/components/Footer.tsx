@@ -1,4 +1,5 @@
 import { Facebook, Youtube, Linkedin, Instagram } from "lucide-react";
+import { assetPath } from "@/lib/utils";
 
 const ZWA_URL = "https://zerowaste.asia/";
 
@@ -30,7 +31,7 @@ export function Footer() {
           className="flex items-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/zwa-logo.png" alt="Zero Waste Asia" className="h-9 w-auto" />
+          <img src={assetPath("/zwa-logo.png")} alt="Zero Waste Asia" className="h-9 w-auto" />
         </a>
 
         <nav className="flex flex-wrap gap-x-5 gap-y-2">

@@ -1,3 +1,5 @@
+import { assetPath } from "@/lib/utils";
+
 const ZWA_URL = "https://zerowaste.asia/";
 
 // Minimal header: just the Zero Waste Asia logo, linking back to the main site.
@@ -14,7 +16,7 @@ export function Header() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/zwa-logo.png"
+            src={assetPath("/zwa-logo.png")}
             alt="Zero Waste Asia"
             className="h-14 w-auto"
           />
