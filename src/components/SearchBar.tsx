@@ -14,7 +14,7 @@ export function SearchBar({
   return (
     <div className="rounded-card bg-panel p-4 sm:p-5">
       <label className="mb-2 block text-sm font-semibold text-ink">
-        I am searching for...
+        {COPY.searchLabel}
       </label>
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">

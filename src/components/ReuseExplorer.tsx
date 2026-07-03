@@ -71,6 +71,23 @@ export function ReuseExplorer() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const hasActiveFilters =
+    filters.countries.length > 0 ||
+    filters.categories.length > 0 ||
+    filters.natures.length > 0 ||
+    filters.affiliations.length > 0 ||
+    filters.search.trim().length > 0;
+
+  const clearFilters = () =>
+    setFilters((f) => ({
+      ...f,
+      search: "",
+      countries: [],
+      categories: [],
+      natures: [],
+      affiliations: [],
+    }));
+
   useEffect(() => {
     let active = true;
     fetchReuseSolutions().then((res) => {
@@ -224,9 +241,17 @@ export function ReuseExplorer() {
           ) : view === "map" ? (
             <MapView items={filtered} />
           ) : view === "gallery" ? (
-            <GalleryView items={pageItems} />
+            <GalleryView
+              items={pageItems}
+              onClearFilters={clearFilters}
+              hasActiveFilters={hasActiveFilters}
+            />
           ) : (
-            <TableView items={pageItems} />
+            <TableView
+              items={pageItems}
+              onClearFilters={clearFilters}
+              hasActiveFilters={hasActiveFilters}
+            />
           )}
 
           <div className="flex justify-center pt-2">

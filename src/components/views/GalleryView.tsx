@@ -1,6 +1,7 @@
 "use client";
 
 import { MapPin, Share2, Bookmark } from "lucide-react";
+import { EmptyResults } from "@/components/EmptyResults";
 import { SolutionImage } from "@/components/SolutionImage";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { VerificationChip } from "@/components/VerificationChip";
@@ -96,12 +97,21 @@ function GalleryCard({ s }: { s: ReuseSolution }) {
   );
 }
 
-export function GalleryView({ items }: { items: ReuseSolution[] }) {
+export function GalleryView({
+  items,
+  onClearFilters,
+  hasActiveFilters,
+}: {
+  items: ReuseSolution[];
+  onClearFilters?: () => void;
+  hasActiveFilters?: boolean;
+}) {
   if (items.length === 0) {
     return (
-      <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-muted">
-        No reuse solutions match your filters.
-      </div>
+      <EmptyResults
+        onClearFilters={onClearFilters}
+        hasActiveFilters={hasActiveFilters}
+      />
     );
   }
   return (

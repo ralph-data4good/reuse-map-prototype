@@ -107,30 +107,30 @@ export function RefineSidebar({
         className={cn("mt-4 space-y-4 lg:block", open ? "block" : "hidden")}
       >
         <MultiSelectFilter
-          label="Country"
-          placeholder="Select countries"
+          label="Country or territory"
+          placeholder="Select country or territory"
           options={countryOptions}
           selected={filters.countries}
           onChange={(v) => onChange({ ...filters, countries: v })}
         />
         <MultiSelectFilter
-          label="Reuse Framework Category"
-          placeholder="Select categories"
+          label="Reuse framework category"
+          placeholder="Select reuse categories"
           options={categoryOptions}
           selected={filters.categories}
           onChange={(v) => onChange({ ...filters, categories: v })}
         />
         <MultiSelectFilter
-          label="Nature of Service"
-          placeholder="Select natures of service"
+          label="Nature of service"
+          placeholder="Select nature of service"
           options={natureOptions}
           selected={filters.natures}
           onChange={(v) => onChange({ ...filters, natures: v })}
         />
         {affiliationOptions.length > 0 && (
           <MultiSelectFilter
-            label="Affiliation of Service Provider"
-            placeholder="Select affiliations"
+            label="Type of service provider"
+            placeholder="Select provider type"
             options={affiliationOptions}
             selected={filters.affiliations}
             onChange={(v) => onChange({ ...filters, affiliations: v })}

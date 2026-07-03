@@ -34,7 +34,7 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
         Reuse Classification Matrix
       </p>
       <p className="mb-3 mt-1 text-center text-[11px] leading-snug text-muted">
-        Categories emerge from asset type (rows) and ownership structure (columns).
+        Classifying reuse solutions by asset type and ownership model.
       </p>
 
       <div
@@ -85,8 +85,8 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
       </div>
 
       <p className="mt-3 border-t border-border pt-3 text-[11px] leading-snug text-muted">
-        This reuse framework is based on an ongoing reuse taxonomy effort of GAIA
-        Asia Pacific and its allied members.
+        This framework draws from GAIA Asia Pacific&rsquo;s work on Reuse Taxonomy
+        with members and allies across the region.
       </p>
     </div>
   );

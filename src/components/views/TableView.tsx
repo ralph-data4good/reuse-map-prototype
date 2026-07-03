@@ -1,16 +1,26 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { EmptyResults } from "@/components/EmptyResults";
 import { VerificationChip } from "@/components/VerificationChip";
 import { SubCategoryTerms } from "@/components/SubCategoryTerms";
 import type { ReuseSolution } from "@/lib/types";
 
-export function TableView({ items }: { items: ReuseSolution[] }) {
+export function TableView({
+  items,
+  onClearFilters,
+  hasActiveFilters,
+}: {
+  items: ReuseSolution[];
+  onClearFilters?: () => void;
+  hasActiveFilters?: boolean;
+}) {
   if (items.length === 0) {
     return (
-      <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-muted">
-        No reuse solutions match your filters.
-      </div>
+      <EmptyResults
+        onClearFilters={onClearFilters}
+        hasActiveFilters={hasActiveFilters}
+      />
     );
   }
   return (
@@ -55,7 +65,7 @@ export function TableView({ items }: { items: ReuseSolution[] }) {
               </td>
               <td className="px-4 py-3 text-right align-top">
                 <Button variant="navy" size="sm">
-                  View
+                  View details
                 </Button>
               </td>
             </tr>

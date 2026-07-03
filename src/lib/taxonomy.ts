@@ -131,19 +131,23 @@ export function verificationLabel(
 // Map + page copy lives here so it is edited in one place. No em dashes.
 export const COPY = {
   siteTitle: "Reuse Solutions",
-  pageTitle: "Mapping Reuse Solutions",
+  pageTitle: "Mapping Reuse Solutions in Asia",
   intro:
-    "Across Asia-Pacific, businesses, cooperatives, and local groups are building practical alternatives to single-use, from refill stations and container-return schemes to repair and second-hand networks. This directory gathers those reuse solutions in one place, so you can see what already works and connect with the people behind them.",
+    "Across Asia Pacific, communities, cooperatives, businesses, and local groups are building practical reuse systems that keep packaging and products in circulation. This directory brings together refill stations, returnable packaging models, reusable product alternatives, repair services, and second-hand networks, so we can see what already works and connect with the people behind them.",
   introMore:
-    "Start on the map to find where solutions operate, switch to the gallery or table for the full details, and filter by country, reuse category, nature of service, or affiliation. Know a solution that belongs here? Add it and help the map grow.",
+    "Start with the map to see where reuse solutions operate across Asia Pacific. Use the filters to narrow results by country, reuse category, nature of service, or provider type. Switch to gallery or table view to compare entries and read more details. Open any result to learn what the solution does, where it works, and who is behind it. Know a solution we should add? Share it through the contribution form so our team can review and include it in the directory.",
   tagline: "Explore reuse, refill, and second-hand solutions across Asia-Pacific.",
-  searchPlaceholder: "Search reuse solutions",
-  refinePanelTitle: "Refine Results",
-  clearAll: "Clear all",
-  ctaHeading: "Know a reuse solution we're missing?",
+  searchLabel: "Search the directory",
+  searchPlaceholder: "Try typing water refill to see water refilling stations...",
+  refinePanelTitle: "Refine results",
+  clearAll: "Clear filters",
+  noResultsTitle: "No reuse solutions found",
+  noResultsBody:
+    "Try adjusting your search or filters, or share a reuse solution that should be added to the directory.",
+  ctaHeading: "Know a reuse solution we should add?",
   ctaBody:
-    "Help grow the map. Share a reuse, refill, or second-hand solution and our team will review it before it goes live.",
-  ctaButton: "Contribute a solution",
+    "Help grow the directory by sharing a reuse, refill, repair, or transfer-based reuse solutions from your community, city, or country. Submissions will be reviewed before they appear on the public map.",
+  ctaButton: "Share a reuse solution",
   noImage: "No image",
 };
 

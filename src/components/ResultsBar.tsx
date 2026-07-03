@@ -29,11 +29,13 @@ export function ResultsBar({
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h2 className="font-heading text-xl font-bold text-ink">
-          Showing {shown} of {total} results
+          {shown >= total
+            ? `Showing ${total} reuse solutions`
+            : `Showing ${shown} of ${total} reuse solutions`}
         </h2>
         {paginated && (
           <p className="mt-0.5 text-sm text-muted">
-            Page {page} of {totalPages} · {total} results
+            Page {page} of {totalPages} · {total} reuse solutions
           </p>
         )}
       </div>

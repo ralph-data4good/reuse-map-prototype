@@ -6,7 +6,7 @@ export function Legend() {
   return (
     <div className="rounded-card border border-border bg-white/95 p-3 shadow-card">
       <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
-        Pin color = Category
+        Pin color by category
       </div>
       <ul className="space-y-1.5">
         {REUSE_CATEGORY_LEGEND.map((row) => (
