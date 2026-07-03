@@ -78,6 +78,30 @@ export function getCategoryColor(category?: string | null): string {
   );
 }
 
+function hexToRgb(hex: string): [number, number, number] {
+  const clean = hex.replace("#", "");
+  const full =
+    clean.length === 3
+      ? clean
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : clean;
+  const int = parseInt(full, 16);
+  return [(int >> 16) & 255, (int >> 8) & 255, int & 255];
+}
+
+/**
+ * Bottom-anchored gradient in a category's color, fading up to transparent.
+ * Overlaid on solution photos so the category badge stays legible and the card
+ * reads as belonging to its reuse category. Works in React style objects and in
+ * the raw-HTML map popup.
+ */
+export function categoryOverlayGradient(category?: string | null): string {
+  const [r, g, b] = hexToRgb(getCategoryColor(category));
+  return `linear-gradient(to top, rgba(${r},${g},${b},0.92) 0%, rgba(${r},${g},${b},0.55) 28%, rgba(${r},${g},${b},0) 62%)`;
+}
+
 /**
  * 2. Native Mapbox layers (circle-color, icon-color, etc.).
  * Returns a data-driven 'match' expression keyed off a feature property.

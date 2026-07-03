@@ -7,6 +7,7 @@ import { VerificationChip } from "@/components/VerificationChip";
 import { TruncatedTitle } from "@/components/TruncatedTitle";
 import { SubCategoryTerms } from "@/components/SubCategoryTerms";
 import { formatDate } from "@/lib/utils";
+import { categoryOverlayGradient } from "@/lib/reuse-categories";
 import type { ReuseSolution } from "@/lib/types";
 
 function GalleryCard({ s }: { s: ReuseSolution }) {
@@ -28,6 +29,11 @@ function GalleryCard({ s }: { s: ReuseSolution }) {
           category={s.primaryCategory}
           alt={s.name}
           className="h-full w-full"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{ backgroundImage: categoryOverlayGradient(s.primaryCategory) }}
         />
         <div className="absolute left-2 top-2 flex gap-1.5">
           <button

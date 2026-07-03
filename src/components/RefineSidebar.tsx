@@ -58,7 +58,7 @@ export function RefineSidebar({
   const hasAny = activeCount > 0;
 
   return (
-    <aside className="rounded-card border border-border bg-panel p-4">
+    <aside className="sticky top-20 z-30 max-h-[calc(100vh-6rem)] self-start overflow-y-auto rounded-card border border-border bg-panel p-4 shadow-card lg:top-24 lg:max-h-[calc(100vh-7rem)]">
       <div className="flex items-center justify-between gap-2">
         <button
           type="button"

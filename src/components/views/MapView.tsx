@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import { Legend } from "@/components/Legend";
 import { MAP_DEFAULTS, verificationLabel } from "@/lib/taxonomy";
-import { getCategoryColor } from "@/lib/reuse-categories";
+import { getCategoryColor, categoryOverlayGradient } from "@/lib/reuse-categories";
 import { getCategoryDefinition, getSubCategoryDefinition } from "@/lib/tooltips";
 import { solutionImageSrc } from "@/lib/utils";
 import type { ReuseSolution } from "@/lib/types";
@@ -60,10 +60,13 @@ function popupHTML(s: ReuseSolution): string {
   // pinned at the top and the text section scrolls when content is long.
   return `
     <div style="width:264px;max-height:440px;display:flex;flex-direction:column;font-family:var(--font-body),system-ui,sans-serif;color:#1A1A1A;">
-      <div style="height:120px;flex:none;background:${color};overflow:hidden;">
+      <div style="position:relative;height:120px;flex:none;background:${color};overflow:hidden;">
         <img src="${esc(img)}" alt="${esc(s.name)}"
           style="width:100%;height:100%;object-fit:cover;display:block;"
           onerror="this.style.display='none'"/>
+        <div style="position:absolute;inset:0;pointer-events:none;background-image:${categoryOverlayGradient(
+          s.primaryCategory
+        )};"></div>
       </div>
       <div style="padding:16px;overflow-y:auto;flex:1 1 auto;">
         <h3 style="margin:0;font-family:var(--font-heading),system-ui,sans-serif;font-weight:600;font-size:15px;line-height:1.35;color:#1A1A1A;">
