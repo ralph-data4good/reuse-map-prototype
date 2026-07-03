@@ -164,9 +164,29 @@ export function ReuseExplorer() {
             </p>
 
             {showHowTo && (
-              <p className="mt-3 text-base leading-relaxed text-white/85 sm:text-lg">
-                {COPY.introMore}
-              </p>
+              <ol className="mt-4 grid gap-2 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-2.5">
+                {COPY.howToSteps.map((step, i) => (
+                  <li
+                    key={step.title}
+                    className="flex gap-3 rounded-xl border border-white/15 bg-white/10 px-3 py-2.5"
+                  >
+                    <span
+                      aria-hidden
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold text-xs font-bold text-white"
+                    >
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0 pt-0.5">
+                      <p className="text-sm font-semibold leading-snug text-white">
+                        {step.title}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-snug text-white/75">
+                        {step.body}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             )}
 
             <div className="mt-4 flex flex-wrap items-center gap-3">

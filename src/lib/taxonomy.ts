@@ -135,8 +135,28 @@ export const COPY = {
   pageTitle: "Mapping Reuse Solutions in Asia",
   intro:
     "Across Asia Pacific, communities, cooperatives, businesses, and local groups are building practical reuse systems that keep packaging and products in circulation. This directory brings together refill stations, returnable packaging models, reusable product alternatives, repair services, and second-hand networks, so we can see what already works and connect with the people behind them.",
-  introMore:
-    "Start with the map to see where reuse solutions operate across Asia Pacific. Use the filters to narrow results by country, reuse category, nature of service, or provider type. Switch to gallery or table view to compare entries and read more details. Open any result to learn what the solution does, where it works, and who is behind it. Know a solution we should add? Share it through the contribution form so our team can review and include it in the directory.",
+  howToSteps: [
+    {
+      title: "Start on the map",
+      body: "See where reuse solutions operate across Asia Pacific.",
+    },
+    {
+      title: "Filter your results",
+      body: "Narrow by country, reuse category, nature of service, or provider type.",
+    },
+    {
+      title: "Switch views",
+      body: "Use gallery or table view to compare entries and read more details.",
+    },
+    {
+      title: "Open a result",
+      body: "Learn what the solution does, where it works, and who is behind it.",
+    },
+    {
+      title: "Share a solution",
+      body: "Submit one through the contribution form for our team to review.",
+    },
+  ],
   tagline: "Explore reuse, refill, and second-hand solutions across Asia-Pacific.",
   searchLabel: "Search the directory",
   searchPlaceholder: "Try typing water refill to see water refilling stations...",

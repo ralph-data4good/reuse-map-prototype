@@ -15,10 +15,26 @@ const LINKS = [
 ];
 
 const SOCIALS = [
-  { label: "Facebook", href: ZWA_URL, Icon: Facebook },
-  { label: "YouTube", href: ZWA_URL, Icon: Youtube },
-  { label: "LinkedIn", href: ZWA_URL, Icon: Linkedin },
-  { label: "Instagram", href: ZWA_URL, Icon: Instagram },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/GAIAAsiaPacific/",
+    Icon: Facebook,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/zerowasteasia/",
+    Icon: Instagram,
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/gaia-asia-pacific/posts/?feedView=all",
+    Icon: Linkedin,
+  },
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com/zerowasteasia",
+    Icon: Youtube,
+  },
 ];
 
 // Simplified ZWA footer: logo + short line, a few links, socials, copyright.
