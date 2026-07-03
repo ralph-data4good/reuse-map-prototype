@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { Loader2, AlertTriangle, ChevronRight } from "lucide-react";
+import {
+  Loader2,
+  AlertTriangle,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  ArrowDown,
+} from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { ViewToggle, type ViewMode } from "@/components/ViewToggle";
 import { RefineSidebar } from "@/components/RefineSidebar";
@@ -36,6 +43,26 @@ export function ReuseExplorer() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const [showHowTo, setShowHowTo] = useState(false);
+
+  // Floating "jump to map" button: only shown until the controls scroll into view.
+  const controlsRef = useRef<HTMLDivElement>(null);
+  const [showJump, setShowJump] = useState(true);
+
+  useEffect(() => {
+    const el = controlsRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setShowJump(!entry.isIntersecting),
+      { rootMargin: "-80px 0px 0px 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const scrollToControls = () => {
+    controlsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
     let active = true;
@@ -111,12 +138,42 @@ export function ReuseExplorer() {
             <p className="mt-3 text-base leading-relaxed text-white/85 sm:text-lg">
               {COPY.intro}
             </p>
+
+            {showHowTo && (
+              <p className="mt-3 text-base leading-relaxed text-white/85 sm:text-lg">
+                {COPY.introMore}
+              </p>
+            )}
+
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowHowTo((v) => !v)}
+                aria-expanded={showHowTo}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+              >
+                {showHowTo ? "Show less" : "How to use this directory"}
+                {showHowTo ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={scrollToControls}
+                className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+              >
+                Explore the map
+                <ArrowDown className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Search + view toggle */}
-      <div className="space-y-4">
+      <div ref={controlsRef} className="scroll-mt-20 space-y-4">
         <SearchBar
           value={filters.search}
           onChange={(v) => setFilters((f) => ({ ...f, search: v }))}
@@ -166,6 +223,19 @@ export function ReuseExplorer() {
           )}
         </section>
       </div>
+
+      {/* Floating jump-to-map button (hidden once the controls are in view) */}
+      {showJump && (
+        <button
+          type="button"
+          onClick={scrollToControls}
+          className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-pop transition-colors hover:bg-navy-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          aria-label="Scroll down to the map and results"
+        >
+          <ArrowDown className="h-4 w-4" />
+          Jump to map
+        </button>
+      )}
     </div>
   );
 }
