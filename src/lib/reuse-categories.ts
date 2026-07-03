@@ -18,7 +18,7 @@ export type ReuseCategory =
   | "Refill"
   | "Product Reuse"
   | "Use of Reusable Product Alternatives"
-  | "Second-hand Reuse";
+  | "Transfer-based Reuse";
 
 export interface ReuseCategoryConfig {
   /** Hex color used for pins and the legend swatch. */
@@ -53,9 +53,9 @@ export const REUSE_CATEGORIES: Record<ReuseCategory, ReuseCategoryConfig> = {
       "Reusable Product Alternatives (Service-Maintained)",
     ],
   },
-  "Second-hand Reuse": {
+  "Transfer-based Reuse": {
     color: "#6B4E9F",
-    subCategories: ["Second-hand Reuse Systems"],
+    subCategories: ["Transfer-based Reuse Systems"],
   },
 };
 

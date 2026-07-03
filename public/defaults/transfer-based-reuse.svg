@@ -2,5 +2,5 @@
   <rect width="600" height="400" fill="#6B4E9F"/>
   <rect width="600" height="400" fill="url(#g)" opacity="0.15"/>
   <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#000000"/></linearGradient></defs>
-  <text x="300" y="215" font-family="Poppins, Arial, sans-serif" font-size="34" font-weight="700" fill="#ffffff" text-anchor="middle">Second-hand Reuse</text>
+  <text x="300" y="215" font-family="Poppins, Arial, sans-serif" font-size="34" font-weight="700" fill="#ffffff" text-anchor="middle">Transfer-based Reuse</text>
 </svg>

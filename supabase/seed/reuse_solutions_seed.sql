@@ -8,8 +8,8 @@
 -- CLEANING APPLIED (source -> canonical):
 --   * Trimmed trailing whitespace ("Packaging Reuse " -> "Packaging Reuse")
 --   * "Refill Systems"            -> category "Refill"
---   * "Secondary Circulation Systems" (category + sub) -> "Second-hand Reuse"
---        with sub-category "Second-hand Reuse Systems"
+--   * "Secondary Circulation Systems" (category + sub) -> "Transfer-based Reuse"
+--        with sub-category "Transfer-based Reuse Systems"
 --   * "Neighbourhood Refill Station/ Store" (nature) -> "Running Refill Station/ Store"
 --   * "Collection to enable product reuse" -> "Collection Service to enable product reuse"
 --   * "initative" typo -> "initiative"
@@ -66,7 +66,7 @@ insert into directory_types (id, group_id, name, description, slug) values
   ('d1000000-0000-4000-8000-000000000004', '90000000-0000-4000-8000-000000000001',
    'Use of Reusable Product Alternatives', '', 'reusable-product-alternatives'),
   ('d1000000-0000-4000-8000-000000000005', '90000000-0000-4000-8000-000000000001',
-   'Second-hand Reuse', '', 'second-hand-reuse')
+   'Transfer-based Reuse', '', 'transfer-based-reuse')
 on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------------
@@ -228,8 +228,8 @@ insert into directory_reuse_details
    array['Indonesia'], now()),
 
   ('da000000-0000-4000-8000-000000000010', 'KKPKP: Wastepicker collective of Pune',
-   array['Second-hand Reuse'],                   -- was "Secondary Circulation Systems"
-   array['Second-hand Reuse Systems'],           -- was "Secondary Circulation Systems"
+   array['Transfer-based Reuse'],                 -- was "Secondary Circulation Systems"
+   array['Transfer-based Reuse Systems'],         -- was "Secondary Circulation Systems"
    array['Collection Service to enable product reuse'], -- was "Collection to enable product reuse"
    array['Waste Picker or wastepicker union led initiative'], -- "initative" typo fixed
    array['India'], now())

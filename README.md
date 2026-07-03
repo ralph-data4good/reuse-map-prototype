@@ -55,7 +55,7 @@ update automatically.
 
 Drop 5 real images into `public/defaults/` named by category slug
 (`packaging-reuse`, `refill`, `product-reuse`, `reusable-product-alternatives`,
-`second-hand-reuse`). Colored SVG placeholders are shipped until then. A per-row
+`transfer-based-reuse`). Colored SVG placeholders are shipped until then. A per-row
 image can also be set via `directories.details.image_url`.
 
 ## Design tokens

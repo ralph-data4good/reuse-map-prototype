@@ -321,14 +321,9 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
   },
 ];
 
-// The app's live taxonomy uses "Second-hand Reuse" where the CSV uses the
-// broader "Transfer-based Reuse". These aliases resolve the app's labels to the
-// closest canonical CSV definition so tooltips render everywhere. Remove or edit
-// if the taxonomy is renamed to match the CSV.
-const LABEL_ALIASES: Record<string, string> = {
-  "Second-hand Reuse": "Transfer-based Reuse",
-  "Second-hand Reuse Systems": "Transfer-based Reuse Systems",
-};
+// The app taxonomy now matches the canonical CSV labels exactly, so no aliasing
+// is needed. Keep this map for any future label that diverges from the CSV.
+const LABEL_ALIASES: Record<string, string> = {};
 
 const MAIN_BY_LABEL = new Map<string, TooltipRecord>();
 const SUB_BY_LABEL = new Map<string, TooltipRecord>();
