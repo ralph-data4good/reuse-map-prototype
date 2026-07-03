@@ -13,7 +13,7 @@ export function ContributeCTA() {
   const [open, setOpen] = useState(false);
 
   return (
-    <section className="mt-12 bg-navy">
+    <section id="contribute" className="mt-12 scroll-mt-20 bg-navy">
       <div className="container flex flex-col items-center gap-4 py-12 text-center">
         <h2 className="font-heading text-2xl font-bold text-white sm:text-3xl">
           {COPY.ctaHeading}

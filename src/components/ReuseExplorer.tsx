@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowDown,
+  Plus,
 } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { ViewToggle, type ViewMode } from "@/components/ViewToggle";
@@ -62,6 +63,12 @@ export function ReuseExplorer() {
 
   const scrollToControls = () => {
     controlsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const scrollToContribute = () => {
+    document
+      .getElementById("contribute")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useEffect(() => {
@@ -221,6 +228,17 @@ export function ReuseExplorer() {
           ) : (
             <TableView items={pageItems} />
           )}
+
+          <div className="flex justify-center pt-2">
+            <button
+              type="button"
+              onClick={scrollToContribute}
+              className="inline-flex items-center gap-2 rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-white shadow-card transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+            >
+              <Plus className="h-4 w-4" />
+              Contribute reuse solutions!
+            </button>
+          </div>
         </section>
       </div>
 
