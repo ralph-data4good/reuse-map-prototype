@@ -2,7 +2,13 @@
 // app uses to auto-match a solution's service provider to its photo. Drop a file
 // named after the provider (e.g. "Alner.webp", "Refill Co.jpg") into
 // public/providers and it maps automatically. Runs on predev / prebuild.
-import { readdirSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import {
+  readdirSync,
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  renameSync,
+} from "node:fs";
 import { join, extname, basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -21,6 +27,20 @@ function slugifyName(name) {
     .replace(/[^a-z0-9]+/g, "");
 }
 
+// GitHub Pages rejects filenames with spaces or special characters like "&"
+// during deployment, so normalize any unsafe filename to a hyphenated, host-safe
+// one. Matching still works because it keys off slugifyName(), not the filename.
+const SAFE_FILENAME = /^[A-Za-z0-9._-]+$/;
+function toSafeFileName(file) {
+  const ext = extname(file).toLowerCase();
+  const slug = basename(file, extname(file))
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `${slug || "image"}${ext}`;
+}
+
 if (!existsSync(providersDir)) {
   mkdirSync(providersDir, { recursive: true });
 }
@@ -31,13 +51,29 @@ const files = existsSync(providersDir)
 
 const map = {};
 const collisions = [];
+const renamed = [];
 for (const file of files.sort()) {
   const key = slugifyName(basename(file, extname(file)));
   if (!key) continue;
-  if (map[key] && map[key] !== `/providers/${file}`) {
-    collisions.push(`${file} collides with ${map[key]}`);
+
+  let finalName = file;
+  if (!SAFE_FILENAME.test(file)) {
+    const safe = toSafeFileName(file);
+    const from = join(providersDir, file);
+    const to = join(providersDir, safe);
+    if (to !== from && existsSync(to)) {
+      collisions.push(`cannot rename ${file} -> ${safe} (target exists)`);
+    } else if (to !== from) {
+      renameSync(from, to);
+      finalName = safe;
+      renamed.push(`${file} -> ${safe}`);
+    }
   }
-  map[key] = `/providers/${file}`;
+
+  if (map[key] && map[key] !== `/providers/${finalName}`) {
+    collisions.push(`${finalName} collides with ${map[key]}`);
+  }
+  map[key] = `/providers/${finalName}`;
 }
 
 const body = Object.entries(map)
@@ -53,6 +89,9 @@ ${body}
 
 writeFileSync(outFile, contents, "utf8");
 console.log(`[provider-images] mapped ${Object.keys(map).length} image(s) -> ${outFile}`);
+if (renamed.length) {
+  console.log(`[provider-images] normalized filenames:\n  ${renamed.join("\n  ")}`);
+}
 if (collisions.length) {
   console.warn(`[provider-images] name collisions:\n  ${collisions.join("\n  ")}`);
 }

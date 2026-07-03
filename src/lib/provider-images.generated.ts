@@ -3,13 +3,13 @@
 export const PROVIDER_IMAGES: Record<string, string> = {
   "alner": "/providers/Alner.webp",
   "cupable": "/providers/Cupable.webp",
-  "hepicircle": "/providers/Hepi Circle.webp",
   "infinitybox": "/providers/Infinity_Box.webp",
-  "kkpkpwastepickercollectiveofpune": "/providers/KKPKP Wastepicker collective of Pune.webp",
   "recube": "/providers/ReCube.webp",
-  "refillablesdongday": "/providers/Refillables Dong Day.webp",
-  "shenzhenkuaipininformationtechnologyco": "/providers/Shenzhen KuaiPin Information Technology Co.webp",
-  "unileversmartfill": "/providers/Unilever & Smartfill.webp",
   "weuse": "/providers/WeUse.webp",
   "back2basics": "/providers/back2basics.webp",
+  "hepicircle": "/providers/hepi-circle.webp",
+  "kkpkpwastepickercollectiveofpune": "/providers/kkpkp-wastepicker-collective-of-pune.webp",
+  "refillablesdongday": "/providers/refillables-dong-day.webp",
+  "shenzhenkuaipininformationtechnologyco": "/providers/shenzhen-kuaipin-information-technology-co.webp",
+  "unileversmartfill": "/providers/unilever-smartfill.webp",
 };
