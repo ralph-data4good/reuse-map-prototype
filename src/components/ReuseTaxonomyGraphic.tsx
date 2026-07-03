@@ -29,6 +29,10 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
           </li>
         ))}
       </ul>
+      <p className="mt-3 border-t border-border pt-3 text-[11px] leading-snug text-muted">
+        This reuse framework is based on an ongoing reuse taxonomy effort of GAIA
+        Asia Pacific and its allied members.
+      </p>
     </div>
   );
 }
