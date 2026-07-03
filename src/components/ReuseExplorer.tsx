@@ -6,6 +6,7 @@ import { Loader2, AlertTriangle, ChevronRight } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { ViewToggle, type ViewMode } from "@/components/ViewToggle";
 import { RefineSidebar } from "@/components/RefineSidebar";
+import { ReuseTaxonomyGraphic } from "@/components/ReuseTaxonomyGraphic";
 import { ResultsBar } from "@/components/ResultsBar";
 import { GalleryView } from "@/components/views/GalleryView";
 import { TableView } from "@/components/views/TableView";
@@ -99,14 +100,17 @@ export function ReuseExplorer() {
         <span className="font-semibold text-ink">Reuse Solutions</span>
       </nav>
 
-      {/* Hero: standout page title + instructive blurb */}
-      <div className="mb-6">
-        <h1 className="font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl">
-          {COPY.pageTitle}
-        </h1>
-        <p className="mt-3 text-base leading-relaxed text-ink/80 sm:text-lg">
-          {COPY.intro}
-        </p>
+      {/* Hero: taxonomy graphic (1/3) + standout title and blurb (2/3) */}
+      <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-center">
+        <ReuseTaxonomyGraphic className="lg:col-span-1" />
+        <div className="lg:col-span-2">
+          <h1 className="font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl">
+            {COPY.pageTitle}
+          </h1>
+          <p className="mt-3 text-base leading-relaxed text-ink/80 sm:text-lg">
+            {COPY.intro}
+          </p>
+        </div>
       </div>
 
       {/* Search + view toggle */}
