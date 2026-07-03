@@ -49,7 +49,8 @@ export function slugifyName(name?: string | null): string {
 export function providerImage(name?: string | null): string | null {
   const key = slugifyName(name);
   const path = key ? PROVIDER_IMAGES[key] : undefined;
-  return path ? assetPath(path) : null;
+  // encodeURI so filenames with spaces or & resolve on the static host.
+  return path ? assetPath(encodeURI(path)) : null;
 }
 
 // Best available image for a solution: an explicit URL from the data, then a
