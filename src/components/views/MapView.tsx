@@ -6,7 +6,7 @@ import { Legend } from "@/components/Legend";
 import { MAP_DEFAULTS, verificationLabel } from "@/lib/taxonomy";
 import { getCategoryColor } from "@/lib/reuse-categories";
 import { getCategoryDefinition, getSubCategoryDefinition } from "@/lib/tooltips";
-import { categoryDefaultImage } from "@/lib/utils";
+import { solutionImageSrc } from "@/lib/utils";
 import type { ReuseSolution } from "@/lib/types";
 
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -33,7 +33,11 @@ function markerElement(color: string): HTMLElement {
 // Popup card HTML echoing the ZWA card (image top, bold name, chips, pill).
 function popupHTML(s: ReuseSolution): string {
   const color = getCategoryColor(s.primaryCategory);
-  const img = s.imageUrl || categoryDefaultImage(s.primaryCategorySlug);
+  const img = solutionImageSrc({
+    imageUrl: s.imageUrl,
+    serviceProviderName: s.serviceProviderName,
+    categorySlug: s.primaryCategorySlug,
+  });
   const location = [s.city, s.country].filter(Boolean).join(", ");
   const chip =
     s.verificationStatus === "unverified"

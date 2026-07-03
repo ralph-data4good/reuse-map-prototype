@@ -23,6 +23,7 @@ function GalleryCard({ s }: { s: ReuseSolution }) {
       <div className="relative h-44 w-full bg-cream">
         <SolutionImage
           imageUrl={s.imageUrl}
+          serviceProviderName={s.serviceProviderName}
           categorySlug={s.primaryCategorySlug}
           category={s.primaryCategory}
           alt={s.name}
