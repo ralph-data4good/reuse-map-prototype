@@ -58,6 +58,21 @@ function first<T>(v: T | T[] | null | undefined): T | null {
   return v ?? null;
 }
 
+// Canonical public display names for a few territories. Applied at the data
+// layer so it works with whatever the DB currently stores, and flows through to
+// the pins, cards, table, search, and the country filter (which is derived from
+// the data) consistently.
+const COUNTRY_DISPLAY_NAMES: Record<string, string> = {
+  China: "Mainland China",
+  "Hong Kong": "Hong Kong (China)",
+  Taiwan: "Taiwan (China)",
+};
+
+function normalizeCountry(name?: string | null): string | null {
+  if (!name) return name ?? null;
+  return COUNTRY_DISPLAY_NAMES[name.trim()] ?? name;
+}
+
 // Explicit FK hints disambiguate the two directories <-> directory_locations
 // relationships (directory_location_id vs directory_locations.directory_id).
 const SELECT = `
@@ -124,11 +139,13 @@ export async function fetchReuseSolutions(): Promise<FetchResult> {
         subCategories: reuse?.sub_categories ?? [],
         naturesOfService: reuse?.natures_of_service ?? [],
         affiliations: reuse?.affiliations ?? [],
-        operatingCountries: reuse?.operating_countries ?? [],
+        operatingCountries: (reuse?.operating_countries ?? []).map(
+          (c) => normalizeCountry(c) as string
+        ),
         serviceProviderName: reuse?.service_provider_name ?? null,
         city: loc?.city ?? null,
         province: loc?.province ?? null,
-        country: loc?.country?.name ?? null,
+        country: normalizeCountry(loc?.country?.name),
         countryIso2: loc?.country?.iso2 ?? null,
         latitude: loc?.latitude ?? null,
         longitude: loc?.longitude ?? null,

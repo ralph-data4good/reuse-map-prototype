@@ -44,7 +44,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: null,
     label: "Packaging Reuse",
     definition:
-      "Systems where packaging is kept in circulation through repeated use, return, cleaning, refilling, and redistribution.",
+      "Packaging that is used again and again. It is returned, cleaned, refilled, and sent back out instead of being thrown away.",
     sourceAlignment: "direct/adapted",
     sourceBasis:
       "GAIA describes packaging reuse as systems where packaging is used multiple times for the same purpose, supported by cleaning, logistics, collection, redistribution, and partnerships.",
@@ -60,7 +60,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: null,
     label: "Refill",
     definition:
-      "Systems where people refill their own or borrowed containers, either at a refill point or at home, to avoid single-use packaging.",
+      "You refill your own or a borrowed container, either at a shop or at home, so you avoid buying new packaging each time.",
     sourceAlignment: "direct/adapted",
     sourceBasis:
       "GAIA/ARC framing distinguishes refill from return: consumers refill reusable packaging and usually handle washing, using consumer-owned or retailer-loaned containers.",
@@ -77,7 +77,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: null,
     label: "Product Reuse",
     definition:
-      "Systems that keep durable goods in use longer through repeated use, repair, rental, sharing, refurbishment, or resale.",
+      "Keeping everyday products in use for longer through repair, renting, sharing, refurbishing, or reselling them.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA zero waste framing that prioritizes waste reduction, reuse, repair, recycling, and composting, and from broader product reuse language.",
@@ -95,7 +95,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: null,
     label: "Use of Reusable Product Alternatives",
     definition:
-      "Durable alternatives that replace disposable items and are designed to be washed, maintained, and reused many times.",
+      "Durable items that replace throwaway ones and are made to be washed and used many times, like a reusable cup instead of a disposable one.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA examples on reusable tableware, containers, and zero waste practices that prioritize reuse and repair over disposal.",
@@ -113,7 +113,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: null,
     label: "Transfer-based Reuse",
     definition:
-      "Systems where reusable goods move from one user to another through lending, donation, swapping, resale, or take-back arrangements.",
+      "Passing usable items on to someone else through lending, donating, swapping, reselling, or take-back schemes.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA zero waste framing on reuse, repair, and recovery of products, packaging, and materials.",
@@ -131,7 +131,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Pre-filled Reuse Systems",
     label: "Pre-filled Reuse Systems",
     definition:
-      "Products are sold in reusable packaging that is already filled, then returned, cleaned, and refilled for the next use cycle.",
+      "Products come already filled in reusable packaging. Once empty, the packaging is returned, cleaned, and refilled for the next customer.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA return-system framing where service providers collect, wash, redistribute, and refill packaging for re-consumption.",
@@ -149,7 +149,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Onsite Reuse Systems",
     label: "Onsite Reuse Systems",
     definition:
-      "Reusable packaging or items are used and returned within the same location, such as offices, canteens, venues, or dine-in spaces.",
+      "Reusable items are used and returned in the same place, like offices, canteens, venues, or dine-in restaurants.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA case categories on onsite dining and reusable tableware/container systems used in closed or semi-closed settings.",
@@ -167,7 +167,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Takeaway & Delivery Reuse Systems",
     label: "Takeaway & Delivery Reuse Systems",
     definition:
-      "Reusable containers are used for takeout or delivery, then returned later through pick-up, drop-off, or partner return points.",
+      "Reusable containers for takeout or delivery that you return later through pick-up, drop-off, or partner return points.",
     sourceAlignment: "direct/adapted",
     sourceBasis:
       "GAIA includes reusable tableware and containers for food and beverage takeaway, with return points, drop-off cabinets, washing, and redistribution.",
@@ -185,7 +185,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Serveware Reuse System",
     label: "Serveware Reuse System",
     definition:
-      "Reusable plates, bowls, cups, cutlery, and other tableware replace disposable serveware for meals, meetings, gatherings, or events.",
+      "Reusable plates, cups, and cutlery used instead of disposables for meals, meetings, gatherings, or events.",
     sourceAlignment: "direct/adapted",
     sourceBasis:
       "GAIA case studies include crockery banks, reusable tableware for events, and reusable tableware/container systems for onsite dining.",
@@ -203,7 +203,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Secondary Packaging Reuse Systems",
     label: "Secondary Packaging Reuse Systems",
     definition:
-      "Reusable boxes, crates, bags, pallets, or transport packaging circulate between suppliers, retailers, delivery partners, and customers.",
+      "Reusable boxes, crates, bags, or pallets that move goods between suppliers, shops, and customers again and again.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA reuse-system framing on logistics, collection, cleaning, redistribution, and supply-chain collaboration.",
@@ -221,7 +221,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Onsite Refill System",
     label: "Onsite Refill System",
     definition:
-      "People refill containers directly at a store, refill station, vending system, market, or community refill point.",
+      "You refill your container on the spot, at a store, refill station, market, or community refill point.",
     sourceAlignment: "direct/adapted",
     sourceBasis:
       "GAIA describes refill systems where consumers bring reusable packaging to the store for product restocking.",
@@ -239,7 +239,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Refill at Home System",
     label: "Refill at Home System",
     definition:
-      "People refill containers at home using concentrates, bulk deliveries, refill packs, or other minimal-packaging refill formats.",
+      "You refill at home using concentrates, bulk deliveries, or refill packs that use less packaging.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from refill model classifications referenced in GAIA's report, including refill at home and refill on the go.",
@@ -257,7 +257,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Product Reuse System",
     label: "Product Reuse System",
     definition:
-      "Durable products are kept in use through repair, refurbishment, lending, rental, resale, or repeated community or business use.",
+      "Durable products kept in use through repair, refurbishing, lending, renting, reselling, or repeated shared use.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA zero waste practices that prioritize waste reduction, reuse, repair, recycling, and composting.",
@@ -274,7 +274,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Reusable Product Alternatives (Self-Maintained)",
     label: "Reusable Product Alternatives (Self-Maintained)",
     definition:
-      "The user owns and maintains the reusable item, including washing, storage, care, and replacement when needed.",
+      "You own the reusable item and look after it yourself, including washing, storing, and replacing it when needed.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA refill framing where consumers use and maintain containers, and from zero waste reuse/repair principles.",
@@ -292,7 +292,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Reusable Product Alternatives (Service-Maintained)",
     label: "Reusable Product Alternatives (Service-Maintained)",
     definition:
-      "A provider supplies, collects, cleans, repairs, and redistributes reusable items for users, businesses, or events.",
+      "A provider supplies, collects, cleans, and repairs the reusable items for you, your business, or an event.",
     sourceAlignment: "direct/adapted",
     sourceBasis:
       "GAIA return-system framing describes service providers handling collection, washing, and redistribution of reusable packaging.",
@@ -310,7 +310,7 @@ export const TOOLTIP_RECORDS: TooltipRecord[] = [
     subCategory: "Transfer-based Reuse Systems",
     label: "Transfer-based Reuse Systems",
     definition:
-      "Reusable goods are passed between users through donation, lending, sharing, swapping, resale, or organized take-back systems.",
+      "Usable goods passed between people through donating, lending, sharing, swapping, reselling, or organized take-back.",
     sourceAlignment: "adapted",
     sourceBasis:
       "Adapted from GAIA zero waste framing on reuse and recovery of products, packaging, and materials.",

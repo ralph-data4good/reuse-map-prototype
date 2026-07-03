@@ -5,10 +5,13 @@ const ZWA_URL = "https://zerowaste.asia/";
 
 const LINKS = [
   { label: "About", href: ZWA_URL },
-  { label: "Directory", href: ZWA_URL },
-  { label: "Privacy", href: ZWA_URL },
-  { label: "Terms", href: ZWA_URL },
-  { label: "Contact", href: ZWA_URL },
+  {
+    label: "Directory",
+    href: "https://zerowaste.asia/directories?page=1&pageSize=20&view=grid",
+  },
+  { label: "Privacy", href: "https://zerowaste.asia/privacy" },
+  { label: "Terms", href: "https://zerowaste.asia/terms-of-service" },
+  { label: "Contact", href: "https://www.no-burn.org/contact-us/" },
 ];
 
 const SOCIALS = [

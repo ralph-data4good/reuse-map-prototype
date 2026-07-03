@@ -10,6 +10,10 @@ import { cn } from "@/lib/utils";
 // open/close on top. role="tooltip" + aria-describedby wire it for screen readers.
 let counter = 0;
 
+// Global coordinator: only one InfoTooltip may be open at a time, so hovering a
+// new helper closes the previous one (no overlapping definitions).
+let closeActiveTooltip: (() => void) | null = null;
+
 export function InfoTooltip({
   content,
   children,
@@ -33,24 +37,53 @@ export function InfoTooltip({
     undefined
   );
 
+  // Stable reference to this instance's close fn, used by the global coordinator.
+  const closeSelf = React.useRef<() => void>(() => {});
+  closeSelf.current = () => setOpen(false);
+
+  const clearActive = () => {
+    if (closeActiveTooltip === closeSelf.current) closeActiveTooltip = null;
+  };
+
   const openNow = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
+    // Close any other open tooltip so definitions never overlap.
+    if (closeActiveTooltip && closeActiveTooltip !== closeSelf.current) {
+      closeActiveTooltip();
+    }
+    closeActiveTooltip = closeSelf.current;
     setOpen(true);
   };
   const closeSoon = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpen(false), 90);
+    closeTimer.current = setTimeout(() => {
+      setOpen(false);
+      clearActive();
+    }, 90);
+  };
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (next) {
+      if (closeActiveTooltip && closeActiveTooltip !== closeSelf.current) {
+        closeActiveTooltip();
+      }
+      closeActiveTooltip = closeSelf.current;
+    } else {
+      clearActive();
+    }
   };
 
   React.useEffect(
     () => () => {
       if (closeTimer.current) clearTimeout(closeTimer.current);
+      clearActive();
     },
     []
   );
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+    <PopoverPrimitive.Root open={open} onOpenChange={handleOpenChange}>
       <PopoverPrimitive.Trigger asChild>
         <button
           type="button"
@@ -60,10 +93,18 @@ export function InfoTooltip({
           onMouseEnter={openNow}
           onMouseLeave={closeSoon}
           onFocus={openNow}
-          onBlur={() => setOpen(false)}
+          onBlur={() => {
+            setOpen(false);
+            clearActive();
+          }}
           onClick={(e) => {
             e.preventDefault();
-            setOpen((o) => !o);
+            if (open) {
+              setOpen(false);
+              clearActive();
+            } else {
+              openNow();
+            }
           }}
           className={cn(
             "inline-flex items-center rounded outline-none focus-visible:ring-2 focus-visible:ring-navy/40",

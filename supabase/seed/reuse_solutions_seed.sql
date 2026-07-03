@@ -33,9 +33,9 @@ begin;
 -- 1. Countries used (8 of the 50)
 -- ---------------------------------------------------------------------------
 insert into countries (id, name, iso2) values
-  ('c1000000-0000-4000-8000-000000000001', 'Indonesia',   'ID'),
-  ('c1000000-0000-4000-8000-000000000002', 'China',       'CN'),
-  ('c1000000-0000-4000-8000-000000000003', 'Hong Kong',   'HK'),
+  ('c1000000-0000-4000-8000-000000000001', 'Indonesia',        'ID'),
+  ('c1000000-0000-4000-8000-000000000002', 'Mainland China',   'CN'),
+  ('c1000000-0000-4000-8000-000000000003', 'Hong Kong (China)','HK'),
   ('c1000000-0000-4000-8000-000000000004', 'Thailand',    'TH'),
   ('c1000000-0000-4000-8000-000000000005', 'Vietnam',     'VN'),
   ('c1000000-0000-4000-8000-000000000006', 'Philippines', 'PH'),
@@ -176,14 +176,14 @@ insert into directory_reuse_details
    array['Takeaway & Delivery Reuse Systems'],
    array['Packaging Reuse System Operator'],
    array['Social Enterprise'],
-   array['China'], now()),
+   array['Mainland China'], now()),
 
   ('da000000-0000-4000-8000-000000000003', 'Recube',
    array['Packaging Reuse'],
    array['Takeaway & Delivery Reuse Systems'],
    array['Packaging Reuse System Operator'],
    array['Social Enterprise'],
-   array['Hong Kong'], now()),
+   array['Hong Kong (China)'], now()),
 
   ('da000000-0000-4000-8000-000000000004', 'Bangkok Metropolitan Authority',
    array['Refill'],

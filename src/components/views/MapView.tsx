@@ -160,23 +160,28 @@ export function MapView({ items }: { items: ReuseSolution[] }) {
 
     // Zoom to fit the currently filtered pins. Padding leaves room for the
     // navigation control and the legend overlay (bottom-left).
+    // `essential: true` ensures the camera moves even when the OS has
+    // "reduce motion" enabled, so every filter change (country, category,
+    // nature, or affiliation) visibly re-frames the pins.
     if (coords.length === 0) {
       map.easeTo({
         center: MAP_DEFAULTS.center,
         zoom: MAP_DEFAULTS.zoom,
         duration: 600,
+        essential: true,
       });
     } else if (coords.length === 1) {
-      map.easeTo({ center: coords[0], zoom: 9, duration: 800 });
+      map.easeTo({ center: coords[0], zoom: 10, duration: 800, essential: true });
     } else {
       const bounds = coords.reduce(
         (b, c) => b.extend(c),
         new mapboxgl.LngLatBounds(coords[0], coords[0])
       );
       map.fitBounds(bounds, {
-        padding: { top: 60, right: 50, bottom: 70, left: 70 },
-        maxZoom: 10,
+        padding: { top: 48, right: 40, bottom: 56, left: 56 },
+        maxZoom: 12,
         duration: 800,
+        essential: true,
       });
     }
   }, [items]);
