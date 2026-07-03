@@ -60,3 +60,9 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # Poll longer / tolerate more transient errors before giving up, since
+          # GitHub's Pages deployment API is intermittently flaky.
+          timeout: 900000
+          error_count: 25
+
