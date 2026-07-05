@@ -1,18 +1,21 @@
 "use client";
 
-import { MapPin, Share2, Bookmark } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { EmptyResults } from "@/components/EmptyResults";
 import { SolutionImage } from "@/components/SolutionImage";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { VerificationChip } from "@/components/VerificationChip";
+import { VisitProviderButton } from "@/components/VisitProviderButton";
 import { TruncatedTitle } from "@/components/TruncatedTitle";
 import { SubCategoryTerms } from "@/components/SubCategoryTerms";
+import { providerLink } from "@/lib/provider-links";
 import { formatDate } from "@/lib/utils";
 import { categoryOverlayGradient } from "@/lib/reuse-categories";
 import type { ReuseSolution } from "@/lib/types";
 
 function GalleryCard({ s }: { s: ReuseSolution }) {
   const location = [s.city, s.country].filter(Boolean).join(", ");
+  const hasVisitLink = Boolean(providerLink(s.serviceProviderName));
   const provider = [
     s.serviceProviderName,
     s.affiliations[0] ? `· ${s.affiliations[0]}` : "",
@@ -36,20 +39,6 @@ function GalleryCard({ s }: { s: ReuseSolution }) {
           className="pointer-events-none absolute inset-0"
           style={{ backgroundImage: categoryOverlayGradient(s.primaryCategory) }}
         />
-        <div className="absolute left-2 top-2 flex gap-1.5">
-          <button
-            aria-label="Share"
-            className="flex h-8 w-8 items-center justify-center rounded-md bg-white/90 text-navy shadow-sm hover:bg-white"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
-          <button
-            aria-label="Bookmark"
-            className="flex h-8 w-8 items-center justify-center rounded-md bg-white/90 text-navy shadow-sm hover:bg-white"
-          >
-            <Bookmark className="h-4 w-4" />
-          </button>
-        </div>
         <div className="absolute bottom-2 left-2">
           <CategoryBadge category={s.primaryCategory} />
         </div>
@@ -83,14 +72,23 @@ function GalleryCard({ s }: { s: ReuseSolution }) {
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between pt-2">
-          <VerificationChip
-            status={s.verificationStatus}
-            source={s.verificationSource}
-          />
-          <span className="text-xs text-muted">
-            Updated {formatDate(s.lastUpdated)}
-          </span>
+        <div className="mt-auto space-y-3 pt-2">
+          <div className="flex items-center justify-between gap-2">
+            <VerificationChip
+              status={s.verificationStatus}
+              source={s.verificationSource}
+            />
+            <span className="text-xs text-muted">
+              Updated {formatDate(s.lastUpdated)}
+            </span>
+          </div>
+          {hasVisitLink && (
+            <VisitProviderButton
+              serviceProviderName={s.serviceProviderName}
+              fullWidth
+              size="sm"
+            />
+          )}
         </div>
       </div>
     </article>

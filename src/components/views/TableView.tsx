@@ -1,9 +1,9 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
 import { EmptyResults } from "@/components/EmptyResults";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { VerificationChip } from "@/components/VerificationChip";
+import { VisitProviderButton } from "@/components/VisitProviderButton";
 import { SubCategoryTerms } from "@/components/SubCategoryTerms";
 import { getCategoryColor } from "@/lib/reuse-categories";
 import { providerLink } from "@/lib/provider-links";
@@ -35,12 +35,11 @@ export function TableView({
             <th className="px-4 py-3">Country</th>
             <th className="px-4 py-3">Sub-Category</th>
             <th className="px-4 py-3">Service Provider</th>
-            <th className="px-4 py-3 text-right">Link</th>
+            <th className="px-4 py-3 text-right">Visit</th>
           </tr>
         </thead>
         <tbody>
           {items.map((s) => {
-            const url = providerLink(s.serviceProviderName);
             const color = getCategoryColor(s.primaryCategory);
             return (
               <tr
@@ -85,16 +84,11 @@ export function TableView({
                   {s.serviceProviderName ?? "—"}
                 </td>
                 <td className="px-4 py-3 text-right align-top">
-                  {url ? (
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm font-semibold text-navy hover:underline"
-                    >
-                      Visit
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
+                  {providerLink(s.serviceProviderName) ? (
+                    <VisitProviderButton
+                      serviceProviderName={s.serviceProviderName}
+                      size="sm"
+                    />
                   ) : (
                     <span className="text-muted">—</span>
                   )}

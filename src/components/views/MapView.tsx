@@ -8,6 +8,7 @@ import { getCategoryColor, categoryOverlayGradient } from "@/lib/reuse-categorie
 import { categoryIconMarkup } from "@/components/CategoryIcon";
 import { getCategoryDefinition, getSubCategoryDefinition } from "@/lib/tooltips";
 import { solutionImageSrc } from "@/lib/utils";
+import { visitProviderButtonMarkup } from "@/lib/visit-provider-markup";
 import type { ReuseSolution } from "@/lib/types";
 
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -98,19 +99,22 @@ function popupHTML(s: ReuseSolution): string {
               )}</span></div>`
             : ""
         }
-        <div style="margin-top:14px;padding-top:12px;border-top:1px solid #EFE7D3;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-          ${
-            s.primaryCategory
-              ? `<span title="${esc(
-                  getCategoryDefinition(s.primaryCategory)
-                )}" style="background:${color};color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;cursor:help;">${esc(
-                  s.primaryCategory
-                )}</span>`
-              : ""
-          }
-          <span style="${chip}font-size:11px;font-weight:500;padding:3px 10px;border-radius:999px;">${esc(
-            verificationLabel(s.verificationStatus, s.verificationSource)
-          )}</span>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid #EFE7D3;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            ${
+              s.primaryCategory
+                ? `<span title="${esc(
+                    getCategoryDefinition(s.primaryCategory)
+                  )}" style="background:${color};color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;cursor:help;">${esc(
+                    s.primaryCategory
+                  )}</span>`
+                : ""
+            }
+            <span style="${chip}font-size:11px;font-weight:500;padding:3px 10px;border-radius:999px;">${esc(
+              verificationLabel(s.verificationStatus, s.verificationSource)
+            )}</span>
+          </div>
+          ${visitProviderButtonMarkup(s.serviceProviderName)}
         </div>
       </div>
     </div>`;
