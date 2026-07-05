@@ -11,10 +11,13 @@ export function CategoryIcon({
   category,
   className,
   color = "currentColor",
+  strokeScale = 1,
 }: {
   category?: string | null;
   className?: string;
   color?: string;
+  /** Multiply native stroke width — useful at small render sizes. */
+  strokeScale?: number;
 }) {
   const data = getIconData(category);
   if (!data) {
@@ -25,12 +28,13 @@ export function CategoryIcon({
       />
     );
   }
+  const strokeWidth = parseFloat(data.strokeWidth) * strokeScale;
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke={color}
-      strokeWidth={data.strokeWidth}
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
@@ -41,13 +45,22 @@ export function CategoryIcon({
   );
 }
 
+type MarkupOptions = {
+  /** Multiply the SVG's native stroke width (helps legibility at small sizes). */
+  strokeScale?: number;
+};
+
 /** Inline SVG string for map markers (raw HTML). */
 export function categoryIconMarkup(
   category?: string | null,
   color = "#ffffff",
-  size = 12
+  size = 12,
+  options: MarkupOptions = {}
 ): string {
   const data = getIconData(category);
   if (!data) return "";
-  return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="${color}" stroke-width="${data.strokeWidth}" stroke-linecap="round" stroke-linejoin="round">${data.inner}</svg>`;
+  const strokeWidth = (
+    parseFloat(data.strokeWidth) * (options.strokeScale ?? 1)
+  ).toFixed(2);
+  return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">${data.inner}</svg>`;
 }

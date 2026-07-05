@@ -16,10 +16,15 @@ export function Legend() {
             className="flex items-center gap-2 text-xs text-ink"
           >
             <span
-              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
               style={{ backgroundColor: row.color }}
             >
-              <CategoryIcon category={row.category} className="h-3 w-3" color="#ffffff" />
+              <CategoryIcon
+                category={row.category}
+                className="h-3.5 w-3.5"
+                color="#ffffff"
+                strokeScale={1.25}
+              />
             </span>
             {row.category}
           </li>

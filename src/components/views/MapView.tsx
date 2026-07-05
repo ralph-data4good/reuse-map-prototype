@@ -18,18 +18,19 @@ function esc(s: string): string {
   );
 }
 
-// Teardrop SVG marker tinted per category, with a simplified category icon inside.
+// Teardrop marker with a white disc + category-colored icon for legibility at
+// map scale (outline icons read poorly when tiny and white-on-gold).
 function markerElement(color: string, category?: string | null): HTMLElement {
   const el = document.createElement("div");
   el.style.cursor = "pointer";
-  const icon = categoryIconMarkup(category, "#ffffff");
+  const icon = categoryIconMarkup(category, color, 15, { strokeScale: 1.5 });
   el.innerHTML = `
-    <div style="position:relative;width:30px;height:40px;">
-      <svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-        <path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 25 15 25s15-14.5 15-25C30 6.7 23.3 0 15 0z"
+    <div style="position:relative;width:34px;height:44px;">
+      <svg width="34" height="44" viewBox="0 0 34 44" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.18));">
+        <path d="M17 0C7.6 0 0 7.6 0 17c0 11.9 17 27 17 27s17-15.1 17-27C34 7.6 26.4 0 17 0z"
           fill="${color}" stroke="white" stroke-width="2"/>
       </svg>
-      <div style="position:absolute;left:50%;top:7px;transform:translateX(-50%);pointer-events:none;display:flex;align-items:center;justify-content:center;width:14px;height:14px;">
+      <div style="position:absolute;left:50%;top:5px;transform:translateX(-50%);pointer-events:none;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,0.12);">
         ${icon}
       </div>
     </div>`;
