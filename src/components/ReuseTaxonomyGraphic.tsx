@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { getCategoryColor } from "@/lib/reuse-categories";
 import { getCategoryDefinition } from "@/lib/tooltips";
 import { cn } from "@/lib/utils";
@@ -65,10 +66,11 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
                 <div
                   key={cat}
                   title={getCategoryDefinition(cat)}
-                  className="flex min-h-[3rem] items-center justify-center rounded-md px-1.5 py-1 text-center font-semibold leading-tight text-white"
+                  className="flex min-h-[3.5rem] flex-col items-center justify-center gap-1 rounded-md px-1.5 py-1.5 text-center font-semibold leading-tight text-white"
                   style={{ backgroundColor: getCategoryColor(cat) }}
                 >
-                  {cat}
+                  <CategoryIcon category={cat} className="h-5 w-5 shrink-0" color="#ffffff" />
+                  <span className="text-[9px] leading-tight sm:text-[10px]">{cat}</span>
                 </div>
               ) : (
                 <div

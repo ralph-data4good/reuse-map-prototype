@@ -5,6 +5,7 @@ import mapboxgl from "mapbox-gl";
 import { Legend } from "@/components/Legend";
 import { MAP_DEFAULTS, verificationLabel } from "@/lib/taxonomy";
 import { getCategoryColor, categoryOverlayGradient } from "@/lib/reuse-categories";
+import { categoryIconMarkup } from "@/components/CategoryIcon";
 import { getCategoryDefinition, getSubCategoryDefinition } from "@/lib/tooltips";
 import { solutionImageSrc } from "@/lib/utils";
 import type { ReuseSolution } from "@/lib/types";
@@ -17,16 +18,21 @@ function esc(s: string): string {
   );
 }
 
-// Teardrop SVG marker tinted per category.
-function markerElement(color: string): HTMLElement {
+// Teardrop SVG marker tinted per category, with a simplified category icon inside.
+function markerElement(color: string, category?: string | null): HTMLElement {
   const el = document.createElement("div");
   el.style.cursor = "pointer";
+  const icon = categoryIconMarkup(category, "#ffffff");
   el.innerHTML = `
-    <svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
-      <path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 25 15 25s15-14.5 15-25C30 6.7 23.3 0 15 0z"
-        fill="${color}" stroke="white" stroke-width="2"/>
-      <circle cx="15" cy="15" r="5.5" fill="white"/>
-    </svg>`;
+    <div style="position:relative;width:30px;height:40px;">
+      <svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+        <path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 25 15 25s15-14.5 15-25C30 6.7 23.3 0 15 0z"
+          fill="${color}" stroke="white" stroke-width="2"/>
+      </svg>
+      <div style="position:absolute;left:50%;top:7px;transform:translateX(-50%);pointer-events:none;display:flex;align-items:center;justify-content:center;width:14px;height:14px;">
+        ${icon}
+      </div>
+    </div>`;
   return el;
 }
 
@@ -148,7 +154,7 @@ export function MapView({ items }: { items: ReuseSolution[] }) {
         maxWidth: "290px",
       }).setHTML(popupHTML(s));
       const marker = new mapboxgl.Marker({
-        element: markerElement(color),
+        element: markerElement(color, s.primaryCategory),
         anchor: "bottom",
       })
         .setLngLat([s.longitude, s.latitude])

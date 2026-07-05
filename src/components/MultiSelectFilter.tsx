@@ -4,6 +4,7 @@ import { ChevronDown, Info } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
 
 export type FilterOption = {
@@ -66,12 +67,18 @@ export function MultiSelectFilter({
                 checked={selected.includes(opt.value)}
                 onCheckedChange={() => toggle(opt.value)}
               />
-              {opt.color && (
+              {opt.color ? (
                 <span
-                  className="h-3 w-3 shrink-0 rounded-full"
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
                   style={{ backgroundColor: opt.color }}
-                />
-              )}
+                >
+                  <CategoryIcon
+                    category={opt.label}
+                    className="h-3 w-3"
+                    color="#ffffff"
+                  />
+                </span>
+              ) : null}
               <label
                 htmlFor={`${label}-${opt.value}`}
                 className="flex-1 cursor-pointer text-sm text-ink"

@@ -1,9 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 import { EmptyResults } from "@/components/EmptyResults";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { VerificationChip } from "@/components/VerificationChip";
 import { SubCategoryTerms } from "@/components/SubCategoryTerms";
+import { getCategoryColor } from "@/lib/reuse-categories";
+import { providerLink } from "@/lib/provider-links";
 import type { ReuseSolution } from "@/lib/types";
 
 export function TableView({
@@ -24,52 +27,81 @@ export function TableView({
     );
   }
   return (
-    <div className="overflow-hidden rounded-card border border-border bg-white shadow-card">
-      <table className="w-full border-collapse text-left text-sm">
+    <div className="overflow-x-auto rounded-card border border-border bg-white shadow-card">
+      <table className="w-full min-w-[720px] border-collapse text-left text-sm">
         <thead>
           <tr className="border-b border-border text-xs font-semibold uppercase tracking-wide text-muted">
             <th className="px-4 py-3">Name</th>
-            <th className="px-4 py-3">Category / Type</th>
             <th className="px-4 py-3">Country</th>
             <th className="px-4 py-3">Sub-Category</th>
-            <th className="px-4 py-3 text-right">Actions</th>
+            <th className="px-4 py-3">Service Provider</th>
+            <th className="px-4 py-3 text-right">Link</th>
           </tr>
         </thead>
         <tbody>
-          {items.map((s) => (
-            <tr
-              key={s.id}
-              className="border-b border-border/70 last:border-0 hover:bg-cream/60"
-            >
-              <td className="max-w-xs px-4 py-3 align-top">
-                <div className="font-medium text-ink">{s.name}</div>
-                <div className="mt-1">
-                  <VerificationChip
-                    status={s.verificationStatus}
-                    source={s.verificationSource}
-                  />
-                </div>
-              </td>
-              <td className="px-4 py-3 align-top text-ink">
-                {s.primaryCategory ?? "—"}
-              </td>
-              <td className="px-4 py-3 align-top text-ink">
-                {s.country ?? "—"}
-              </td>
-              <td className="px-4 py-3 align-top text-muted">
-                {s.subCategories.length ? (
-                  <SubCategoryTerms items={s.subCategories} />
-                ) : (
-                  s.naturesOfService.join(", ") || "—"
-                )}
-              </td>
-              <td className="px-4 py-3 text-right align-top">
-                <Button variant="navy" size="sm">
-                  View details
-                </Button>
-              </td>
-            </tr>
-          ))}
+          {items.map((s) => {
+            const url = providerLink(s.serviceProviderName);
+            const color = getCategoryColor(s.primaryCategory);
+            return (
+              <tr
+                key={s.id}
+                className="border-b border-border/70 last:border-0 hover:bg-cream/60"
+              >
+                <td className="max-w-xs px-4 py-3 align-top">
+                  <div className="flex items-start gap-2">
+                    <span
+                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
+                      style={{ backgroundColor: color }}
+                      title={s.primaryCategory ?? undefined}
+                    >
+                      <CategoryIcon
+                        category={s.primaryCategory}
+                        className="h-3.5 w-3.5"
+                        color="#ffffff"
+                      />
+                    </span>
+                    <div>
+                      <div className="font-medium text-ink">{s.name}</div>
+                      <div className="mt-1">
+                        <VerificationChip
+                          status={s.verificationStatus}
+                          source={s.verificationSource}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3 align-top text-ink">
+                  {s.country ?? "—"}
+                </td>
+                <td className="px-4 py-3 align-top text-muted">
+                  {s.subCategories.length ? (
+                    <SubCategoryTerms items={s.subCategories} />
+                  ) : (
+                    s.naturesOfService.join(", ") || "—"
+                  )}
+                </td>
+                <td className="px-4 py-3 align-top text-ink">
+                  {s.serviceProviderName ?? "—"}
+                </td>
+                <td className="px-4 py-3 text-right align-top">
+                  {url ? (
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm font-semibold text-navy hover:underline"
+                    >
+                      Visit
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  ) : (
+                    <span className="text-muted">—</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

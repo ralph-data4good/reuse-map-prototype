@@ -1,4 +1,5 @@
 import { REUSE_CATEGORY_LEGEND } from "@/lib/reuse-categories";
+import { CategoryIcon } from "@/components/CategoryIcon";
 
 // Small legend mapping pin color to Reuse Framework Category.
 // Rows come from the single source of truth (reuse-categories.ts).
@@ -15,9 +16,11 @@ export function Legend() {
             className="flex items-center gap-2 text-xs text-ink"
           >
             <span
-              className="h-3 w-3 rounded-full"
+              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
               style={{ backgroundColor: row.color }}
-            />
+            >
+              <CategoryIcon category={row.category} className="h-3 w-3" color="#ffffff" />
+            </span>
             {row.category}
           </li>
         ))}
