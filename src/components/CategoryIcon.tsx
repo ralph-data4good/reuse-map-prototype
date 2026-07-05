@@ -1,4 +1,5 @@
 import { CATEGORY_ICON_SVGS } from "@/lib/category-icon-svgs.generated";
+import { getCategoryColor } from "@/lib/reuse-categories";
 import { cn } from "@/lib/utils";
 
 function getIconData(label?: string | null) {
@@ -63,4 +64,38 @@ export function categoryIconMarkup(
     parseFloat(data.strokeWidth) * (options.strokeScale ?? 1)
   ).toFixed(2);
   return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">${data.inner}</svg>`;
+}
+
+/** Icon on a white rounded square — reads clearly on colored backgrounds. */
+export function CategoryIconBadge({
+  category,
+  className,
+  size = "md",
+  iconColor,
+}: {
+  category?: string | null;
+  className?: string;
+  size?: "sm" | "md";
+  iconColor?: string;
+}) {
+  const badgeSize = size === "sm" ? "h-6 w-6 rounded-md" : "h-7 w-7 rounded-md";
+  const iconSize = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
+  const tint = iconColor ?? getCategoryColor(category);
+
+  return (
+    <span
+      className={cn(
+        "flex shrink-0 items-center justify-center bg-white shadow-sm",
+        badgeSize,
+        className
+      )}
+    >
+      <CategoryIcon
+        category={category}
+        className={iconSize}
+        color={tint}
+        strokeScale={1.4}
+      />
+    </span>
+  );
 }

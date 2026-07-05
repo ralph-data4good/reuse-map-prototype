@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { CategoryIcon } from "@/components/CategoryIcon";
+import { CategoryIconBadge } from "@/components/CategoryIcon";
 import { getCategoryColor } from "@/lib/reuse-categories";
 import { getCategoryDefinition } from "@/lib/tooltips";
 import { cn } from "@/lib/utils";
@@ -49,9 +49,13 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
         {OWNERSHIP.map((h) => (
           <div
             key={h}
-            className="flex flex-col items-center justify-center gap-0.5 rounded-md bg-navy/5 px-1 py-1 text-center font-semibold uppercase leading-tight tracking-wide text-navy"
+            className="flex flex-col items-center justify-center gap-1 rounded-md bg-navy/5 px-1 py-1 text-center font-semibold uppercase leading-tight tracking-wide text-navy"
           >
-            <CategoryIcon category={h} className="h-3.5 w-3.5 text-navy" />
+            <CategoryIconBadge
+              category={h}
+              size="sm"
+              iconColor="#1E3A4C"
+            />
             <span className="text-[8px] sm:text-[9px]">{h}</span>
           </div>
         ))}
@@ -59,8 +63,12 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
         {/* Asset-type rows */}
         {MATRIX.map((row) => (
           <Fragment key={row.asset}>
-            <div className="flex flex-col items-center justify-center gap-0.5 rounded-md bg-navy/5 px-1 py-1 text-center font-semibold uppercase leading-tight tracking-wide text-navy">
-              <CategoryIcon category={row.asset} className="h-3.5 w-3.5 text-navy" />
+            <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-navy/5 px-1 py-1 text-center font-semibold uppercase leading-tight tracking-wide text-navy">
+              <CategoryIconBadge
+                category={row.asset}
+                size="sm"
+                iconColor="#1E3A4C"
+              />
               <span className="text-[8px] sm:text-[9px]">{row.asset}</span>
             </div>
             {row.cells.map((cat, i) =>
@@ -68,10 +76,10 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
                 <div
                   key={cat}
                   title={getCategoryDefinition(cat)}
-                  className="flex min-h-[3.5rem] flex-col items-center justify-center gap-1 rounded-md px-1.5 py-1.5 text-center font-semibold leading-tight text-white"
+                  className="flex min-h-[3.75rem] flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-1.5 text-center font-semibold leading-tight text-white"
                   style={{ backgroundColor: getCategoryColor(cat) }}
                 >
-                  <CategoryIcon category={cat} className="h-5 w-5 shrink-0" color="#ffffff" />
+                  <CategoryIconBadge category={cat} size="md" />
                   <span className="text-[9px] leading-tight sm:text-[10px]">{cat}</span>
                 </div>
               ) : (

@@ -15,6 +15,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { ViewToggle, type ViewMode } from "@/components/ViewToggle";
 import { RefineSidebar } from "@/components/RefineSidebar";
 import { ReuseTaxonomyGraphic } from "@/components/ReuseTaxonomyGraphic";
+import { HowToSteps } from "@/components/HowToSteps";
 import { ResultsBar } from "@/components/ResultsBar";
 import { GalleryView } from "@/components/views/GalleryView";
 import { TableView } from "@/components/views/TableView";
@@ -163,31 +164,7 @@ export function ReuseExplorer() {
               {COPY.intro}
             </p>
 
-            {showHowTo && (
-              <ol className="mt-4 grid gap-2 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-2.5">
-                {COPY.howToSteps.map((step, i) => (
-                  <li
-                    key={step.title}
-                    className="flex gap-3 rounded-xl border border-white/15 bg-white/10 px-3 py-2.5"
-                  >
-                    <span
-                      aria-hidden
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold text-xs font-bold text-white"
-                    >
-                      {i + 1}
-                    </span>
-                    <div className="min-w-0 pt-0.5">
-                      <p className="text-sm font-semibold leading-snug text-white">
-                        {step.title}
-                      </p>
-                      <p className="mt-0.5 text-xs leading-snug text-white/75">
-                        {step.body}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            )}
+            {showHowTo && <HowToSteps steps={COPY.howToSteps} />}
 
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <button
