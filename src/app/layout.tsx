@@ -3,6 +3,7 @@ import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { assetPath } from "@/lib/utils";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,8 +23,8 @@ export const metadata: Metadata = {
   description:
     "Explore reuse, refill, and second-hand solutions across Asia-Pacific.",
   icons: {
-    icon: [{ url: "/icon.png", type: "image/png" }],
-    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+    icon: [{ url: assetPath("/icon.png"), type: "image/png" }],
+    apple: [{ url: assetPath("/apple-icon.png"), type: "image/png" }],
   },
 };
 
