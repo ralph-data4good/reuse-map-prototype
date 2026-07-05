@@ -1,17 +1,37 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import mapboxgl from "mapbox-gl";
 import { Legend } from "@/components/Legend";
-import { MAP_DEFAULTS, verificationLabel } from "@/lib/taxonomy";
-import { getCategoryColor, categoryOverlayGradient } from "@/lib/reuse-categories";
-import { categoryIconMarkup } from "@/components/CategoryIcon";
-import { getCategoryDefinition, getSubCategoryDefinition } from "@/lib/tooltips";
-import { solutionImageSrc } from "@/lib/utils";
-import { visitProviderButtonMarkup } from "@/lib/visit-provider-markup";
-import type { ReuseSolution } from "@/lib/types";
+import { MAP_DEFAULTS, trustBadgeLabel } from "@/lib/taxonomy";
+import {
+  getCategoryColor,
+  getCategoryChipColors,
+  categoryOverlayGradient,
+} from "@/lib/reuse-categories";
+import { getCategoryDefinition } from "@/lib/tooltips";
+import { solutionImageSrc, formatDate } from "@/lib/utils";
+import {
+  solutionDetailLinkMarkup,
+  visitProviderButtonMarkup,
+} from "@/lib/visit-provider-markup";
+import { ensureCategoryPinImages } from "@/lib/map-pin-images";
+import { mapCameraDuration } from "@/lib/motion";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { solutionDetailPath } from "@/lib/solution-paths";
+import {
+  contributePrefillFromFilters,
+  contributeUrl,
+  emptyStateHeadline,
+} from "@/lib/contribute-link";
+import type { Filters, ReuseSolution } from "@/lib/types";
 
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+const SOURCE_ID = "solutions";
+const CLUSTER_LAYER = "solutions-clusters";
+const CLUSTER_COUNT_LAYER = "solutions-cluster-count";
+const UNCLUSTERED_LAYER = "solutions-unclustered";
 
 function esc(s: string): string {
   return s.replace(/[&<>"']/g, (c) =>
@@ -19,25 +39,6 @@ function esc(s: string): string {
   );
 }
 
-// Teardrop marker with a white category glyph on the category color (matches pin SVG set).
-function markerElement(color: string, category?: string | null): HTMLElement {
-  const el = document.createElement("div");
-  el.style.cursor = "pointer";
-  const icon = categoryIconMarkup(category, "#ffffff", 17, { strokeScale: 1.1 });
-  el.innerHTML = `
-    <div style="position:relative;width:34px;height:44px;">
-      <svg width="34" height="44" viewBox="0 0 34 44" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.18));">
-        <path d="M17 0C7.6 0 0 7.6 0 17c0 11.9 17 27 17 27s17-15.1 17-27C34 7.6 26.4 0 17 0z"
-          fill="${color}" stroke="white" stroke-width="2"/>
-      </svg>
-      <div style="position:absolute;left:50%;top:6px;transform:translateX(-50%);pointer-events:none;display:flex;align-items:center;justify-content:center;width:21px;height:21px;">
-        ${icon}
-      </div>
-    </div>`;
-  return el;
-}
-
-// Popup card HTML echoing the ZWA card (image top, bold name, chips, pill).
 function popupHTML(s: ReuseSolution): string {
   const color = getCategoryColor(s.primaryCategory);
   const img = solutionImageSrc({
@@ -52,19 +53,17 @@ function popupHTML(s: ReuseSolution): string {
       : s.verificationStatus === "staff_verified"
         ? "background:#F3E8FF;color:#6B21A8;"
         : "background:#E8F5E9;color:#2E7D32;";
-  // Sub-categories as inline terms carrying a native title tooltip. The map
-  // popup is raw HTML (outside React), so title= is the accessible-enough
-  // fallback here; the Gallery and Table use the full hover/focus/tap tooltip.
-  const subCategoriesHtml = s.subCategories
-    .map(
-      (sub) =>
-        `<span title="${esc(getSubCategoryDefinition(sub))}" style="text-decoration:underline dotted;text-underline-offset:2px;cursor:help;">${esc(
-          sub
-        )}</span>`
+  const trustLabel = esc(
+    trustBadgeLabel(
+      s.verificationStatus,
+      s.verificationSource,
+      formatDate(s.lastUpdated)
     )
+  );
+  const categoryChip = getCategoryChipColors(s.primaryCategory);
+  const subCategoriesHtml = s.subCategories
+    .map((sub) => `<span>${esc(sub)}</span>`)
     .join(", ");
-  // Fixed max height so a tall card never overflows the map; the image stays
-  // pinned at the top and the text section scrolls when content is long.
   return `
     <div style="width:264px;max-height:440px;display:flex;flex-direction:column;font-family:var(--font-body),system-ui,sans-serif;color:#1A1A1A;">
       <div style="position:relative;height:120px;flex:none;background:${color};overflow:hidden;">
@@ -104,101 +103,272 @@ function popupHTML(s: ReuseSolution): string {
               s.primaryCategory
                 ? `<span title="${esc(
                     getCategoryDefinition(s.primaryCategory)
-                  )}" style="background:${color};color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;cursor:help;">${esc(
+                  )}" style="background:${categoryChip.backgroundColor};color:${categoryChip.color};font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;cursor:help;">${esc(
                     s.primaryCategory
                   )}</span>`
                 : ""
             }
-            <span style="${chip}font-size:11px;font-weight:500;padding:3px 10px;border-radius:999px;">${esc(
-              verificationLabel(s.verificationStatus, s.verificationSource)
-            )}</span>
+            <span style="${chip}font-size:11px;font-weight:500;padding:3px 10px;border-radius:999px;">${trustLabel}</span>
           </div>
+          ${solutionDetailLinkMarkup(s.slug)}
           ${visitProviderButtonMarkup(s.serviceProviderName)}
         </div>
       </div>
     </div>`;
 }
 
-export function MapView({ items }: { items: ReuseSolution[] }) {
+function solutionsToGeoJSON(items: ReuseSolution[]): GeoJSON.FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: items
+      .filter((s) => s.latitude != null && s.longitude != null)
+      .map((s) => ({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [s.longitude as number, s.latitude as number],
+        },
+        properties: {
+          id: s.id,
+          catSlug: s.primaryCategorySlug || "unknown",
+        },
+      })),
+  };
+}
+
+export function MapView({
+  items,
+  filters,
+  hasActiveFilters,
+  selectedCategories,
+  onToggleCategory,
+  onShowAllCategories,
+}: {
+  items: ReuseSolution[];
+  filters: Filters;
+  hasActiveFilters?: boolean;
+  selectedCategories: string[];
+  onToggleCategory: (category: string) => void;
+  onShowAllCategories: () => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const popupRef = useRef<mapboxgl.Popup | null>(null);
+  const itemsByIdRef = useRef<Map<string, ReuseSolution>>(new Map());
+  const [layersReady, setLayersReady] = useState(false);
+  const [legendCollapsed, setLegendCollapsed] = useState(true);
+  const [inView, setInView] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
+
+  const mappable = items.filter(
+    (s) => s.latitude != null && s.longitude != null
+  );
+  const showEmpty = mappable.length === 0;
+  const contributeHref = contributeUrl(contributePrefillFromFilters(filters));
 
   useEffect(() => {
-    if (!TOKEN || !containerRef.current || mapRef.current) return;
+    itemsByIdRef.current = new Map(items.map((s) => [s.id, s]));
+  }, [items]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setInView(true);
+      },
+      { rootMargin: "64px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!TOKEN || !inView || !containerRef.current || mapRef.current) return;
     mapboxgl.accessToken = TOKEN;
-    mapRef.current = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: containerRef.current,
       style: "mapbox://styles/mapbox/light-v11",
       center: MAP_DEFAULTS.center,
       zoom: MAP_DEFAULTS.zoom,
     });
-    mapRef.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+    mapRef.current = map;
+    map.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+    map.on("load", () => {
+      void ensureCategoryPinImages(map).then(() => {
+        if (map.getSource(SOURCE_ID)) return;
+
+        map.addSource(SOURCE_ID, {
+          type: "geojson",
+          data: solutionsToGeoJSON([]),
+          cluster: true,
+          clusterRadius: 45,
+        });
+
+        map.addLayer({
+          id: CLUSTER_LAYER,
+          type: "circle",
+          source: SOURCE_ID,
+          filter: ["has", "point_count"],
+          paint: {
+            "circle-color": "#243647",
+            "circle-radius": [
+              "step",
+              ["get", "point_count"],
+              18,
+              10,
+              22,
+              25,
+              26,
+            ],
+            "circle-stroke-width": 2,
+            "circle-stroke-color": "#ffffff",
+          },
+        });
+
+        map.addLayer({
+          id: CLUSTER_COUNT_LAYER,
+          type: "symbol",
+          source: SOURCE_ID,
+          filter: ["has", "point_count"],
+          layout: {
+            "text-field": "{point_count_abbreviated}",
+            "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+            "text-size": 12,
+          },
+          paint: { "text-color": "#ffffff" },
+        });
+
+        map.addLayer({
+          id: UNCLUSTERED_LAYER,
+          type: "symbol",
+          source: SOURCE_ID,
+          filter: ["!", ["has", "point_count"]],
+          layout: {
+            "icon-image": ["get", "catSlug"],
+            "icon-size": 1,
+            "icon-anchor": "bottom",
+            "icon-allow-overlap": true,
+          },
+        });
+
+        map.on("click", CLUSTER_LAYER, (e) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [CLUSTER_LAYER],
+          });
+          if (!features.length) return;
+          const clusterId = features[0].properties?.cluster_id;
+          const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource;
+          if (clusterId == null) return;
+          source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err || zoom == null) return;
+            const coords = (features[0].geometry as GeoJSON.Point).coordinates as [
+              number,
+              number,
+            ];
+            map.easeTo({
+              center: coords,
+              zoom,
+              duration: mapCameraDuration(),
+              essential: !reducedMotion,
+            });
+          });
+        });
+
+        map.on("click", UNCLUSTERED_LAYER, (e) => {
+          const feature = e.features?.[0];
+          if (!feature) return;
+          const id = feature.properties?.id as string | undefined;
+          if (!id) return;
+          const solution = itemsByIdRef.current.get(id);
+          if (!solution) return;
+
+          popupRef.current?.remove();
+          const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [
+            number,
+            number,
+          ];
+          popupRef.current = new mapboxgl.Popup({
+            offset: 24,
+            closeButton: true,
+            maxWidth: "290px",
+          })
+            .setLngLat(coords)
+            .setHTML(popupHTML(solution))
+            .addTo(map);
+        });
+
+        map.on("mouseenter", CLUSTER_LAYER, () => {
+          map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", CLUSTER_LAYER, () => {
+          map.getCanvas().style.cursor = "";
+        });
+        map.on("mouseenter", UNCLUSTERED_LAYER, () => {
+          map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", UNCLUSTERED_LAYER, () => {
+          map.getCanvas().style.cursor = "";
+        });
+
+        setLayersReady(true);
+        const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource;
+        source.setData(solutionsToGeoJSON(items));
+      });
+    });
 
     return () => {
-      mapRef.current?.remove();
+      popupRef.current?.remove();
+      map.remove();
       mapRef.current = null;
+      setLayersReady(false);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- init when visible
+  }, [inView]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !layersReady) return;
 
-    markersRef.current.forEach((m) => m.remove());
-    markersRef.current = [];
+    const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+    if (!source) return;
 
-    const coords: [number, number][] = [];
-    items.forEach((s) => {
-      if (s.latitude == null || s.longitude == null) return;
-      const color = getCategoryColor(s.primaryCategory);
-      const popup = new mapboxgl.Popup({
-        offset: 24,
-        closeButton: true,
-        maxWidth: "290px",
-      }).setHTML(popupHTML(s));
-      const marker = new mapboxgl.Marker({
-        element: markerElement(color, s.primaryCategory),
-        anchor: "bottom",
-      })
-        .setLngLat([s.longitude, s.latitude])
-        .setPopup(popup)
-        .addTo(map);
-      markersRef.current.push(marker);
-      coords.push([s.longitude, s.latitude]);
-    });
+    const geojson = solutionsToGeoJSON(items);
+    source.setData(geojson);
 
-    // Zoom to fit the currently filtered pins. Padding leaves room for the
-    // navigation control and the legend overlay (bottom-left).
-    // `essential: true` ensures the camera moves even when the OS has
-    // "reduce motion" enabled, so every filter change (country, category,
-    // nature, or affiliation) visibly re-frames the pins.
+    const coords = geojson.features.map(
+      (f) => (f.geometry as GeoJSON.Point).coordinates as [number, number]
+    );
+
     if (coords.length === 0) {
-      map.easeTo({
-        center: MAP_DEFAULTS.center,
-        zoom: MAP_DEFAULTS.zoom,
-        duration: 600,
-        essential: true,
+      return;
+    }
+    const duration = mapCameraDuration();
+    if (coords.length === 1) {
+      map.flyTo({
+        center: coords[0],
+        zoom: 9,
+        duration,
+        essential: !reducedMotion,
       });
-    } else if (coords.length === 1) {
-      map.easeTo({ center: coords[0], zoom: 10, duration: 800, essential: true });
     } else {
       const bounds = coords.reduce(
         (b, c) => b.extend(c),
         new mapboxgl.LngLatBounds(coords[0], coords[0])
       );
       map.fitBounds(bounds, {
-        padding: { top: 48, right: 40, bottom: 56, left: 56 },
-        maxZoom: 12,
-        duration: 800,
-        essential: true,
+        padding: 60,
+        maxZoom: 10,
+        duration,
+        essential: !reducedMotion,
       });
     }
-  }, [items]);
+  }, [items, layersReady, reducedMotion]);
 
   if (!TOKEN) {
     return (
-      <div className="flex h-[600px] flex-col items-center justify-center rounded-card border border-dashed border-border bg-white p-8 text-center">
+      <div className="flex h-[520px] flex-col items-center justify-center rounded-card border border-dashed border-border bg-white p-8 text-center">
         <p className="font-heading text-lg font-semibold text-ink">
           Map needs a Mapbox token
         </p>
@@ -211,10 +381,74 @@ export function MapView({ items }: { items: ReuseSolution[] }) {
   }
 
   return (
-    <div className="relative h-[600px] overflow-hidden rounded-card border border-border shadow-card">
-      <div ref={containerRef} className="h-full w-full" />
-      <div className="absolute bottom-4 left-4 z-10 w-48">
-        <Legend />
+    <div className="space-y-3">
+      <ul className="sr-only" aria-label="Solutions shown on the map">
+        {mappable.map((s) => (
+          <li key={s.id}>
+            <Link href={solutionDetailPath(s.slug)}>
+              {s.serviceProviderName ?? s.name}
+              {s.city || s.country
+                ? ` — ${[s.city, s.country].filter(Boolean).join(", ")}`
+                : ""}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <div className="relative h-[520px] overflow-hidden rounded-card border border-border shadow-card">
+        <div
+          ref={containerRef}
+          className="h-full w-full"
+          role="application"
+          aria-label="Interactive map of reuse solutions. Use the list above or switch to gallery or table view for keyboard browsing."
+          tabIndex={0}
+        />
+        {!inView && (
+          <div
+            className="pointer-events-none absolute inset-0 flex items-center justify-center bg-cream/80 text-sm text-muted"
+            aria-hidden
+          >
+            Map loads when visible…
+          </div>
+        )}
+        {showEmpty && (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-white/75 p-6">
+            <div className="pointer-events-auto max-w-md rounded-card border border-border bg-white p-6 text-center shadow-card">
+              <p className="font-heading text-lg font-semibold text-ink">
+                {emptyStateHeadline(filters)}
+              </p>
+              <p className="mt-2 text-sm text-muted">
+                Know one?{" "}
+                <Link
+                  href={contributeHref}
+                  className="font-semibold text-navy underline underline-offset-2 hover:text-navy-hover"
+                >
+                  Contribute it →
+                </Link>
+              </p>
+              {hasActiveFilters && (
+                <p className="mt-2 text-xs text-muted">
+                  Adjust filters above or share a missing solution.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+        <div className="absolute bottom-3 left-3 z-10 w-[min(100%,13rem)] md:hidden">
+          <Legend
+            selectedCategories={selectedCategories}
+            onToggleCategory={onToggleCategory}
+            onShowAll={onShowAllCategories}
+            collapsed={legendCollapsed}
+            onCollapsedChange={setLegendCollapsed}
+          />
+        </div>
+      </div>
+      <div className="hidden md:block">
+        <Legend
+          selectedCategories={selectedCategories}
+          onToggleCategory={onToggleCategory}
+          onShowAll={onShowAllCategories}
+        />
       </div>
     </div>
   );

@@ -23,6 +23,9 @@ const MATRIX: { asset: string; cells: (string | null)[] }[] = [
   },
 ];
 
+const EMPTY_MATRIX_CELL_TOOLTIP =
+  "Not a category in the framework: packaging with transfer of ownership is covered under Packaging Reuse.";
+
 export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
   return (
     <div
@@ -43,8 +46,11 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
         style={{ gridTemplateColumns: "minmax(2.25rem,auto) repeat(3,minmax(0,1fr))" }}
       >
         {/* Header row: corner + ownership columns */}
-        <div className="flex items-end justify-center pb-0.5 text-center text-[9px] font-semibold uppercase leading-none tracking-wide text-muted">
-          Own. →
+        <div className="flex flex-col items-center justify-center gap-0.5 pb-0.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-wide text-muted sm:text-[9px]">
+          <span>Asset type ↓</span>
+          <span className="text-[7px] normal-case tracking-normal text-muted/80 sm:text-[8px]">
+            Ownership model →
+          </span>
         </div>
         {OWNERSHIP.map((h) => (
           <div
@@ -90,8 +96,8 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
               ) : (
                 <div
                   key={`${row.asset}-empty-${i}`}
-                  className="flex min-h-[3rem] items-center justify-center rounded-md bg-navy/[0.03] text-base text-muted/50"
-                  aria-hidden="true"
+                  title={EMPTY_MATRIX_CELL_TOOLTIP}
+                  className="flex min-h-[3rem] cursor-help items-center justify-center rounded-md bg-navy/[0.03] text-base text-muted/50"
                 >
                   –
                 </div>

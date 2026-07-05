@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { MultiSelectFilter, type FilterOption } from "@/components/MultiSelectFilter";
 import { COPY, NATURES_OF_SERVICE, AFFILIATIONS } from "@/lib/taxonomy";
@@ -18,11 +18,17 @@ export function RefineSidebar({
   onChange,
   availableCountries,
   availableAffiliations,
+  highlight = false,
+  asideRef,
+  mobileOpen = false,
 }: {
   filters: Filters;
   onChange: (next: Filters) => void;
   availableCountries: string[];
   availableAffiliations: string[];
+  highlight?: boolean;
+  asideRef?: RefObject<HTMLElement | null>;
+  mobileOpen?: boolean;
 }) {
   const countryOptions: FilterOption[] = availableCountries.map((c) => ({
     value: c,
@@ -50,15 +56,26 @@ export function RefineSidebar({
   // Collapsed by default on mobile so the map is visible; always open on desktop.
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (mobileOpen) setOpen(true);
+  }, [mobileOpen]);
+
   const activeCount =
     filters.countries.length +
     filters.categories.length +
+    filters.subcategories.length +
     filters.natures.length +
     filters.affiliations.length;
   const hasAny = activeCount > 0;
 
   return (
-    <aside className="sticky top-20 z-30 max-h-[calc(100vh-6rem)] self-start overflow-y-auto rounded-card border border-border bg-panel p-4 shadow-card lg:top-24 lg:max-h-[calc(100vh-7rem)]">
+    <aside
+      ref={asideRef as RefObject<HTMLElement>}
+      className={cn(
+        "sticky top-20 z-30 max-h-[calc(100vh-6rem)] self-start overflow-y-auto rounded-card border border-border bg-panel p-4 shadow-card lg:top-24 lg:max-h-[calc(100vh-7rem)]",
+        highlight && "refine-panel-pulse"
+      )}
+    >
       <div className="flex items-center justify-between gap-2">
         <button
           type="button"
@@ -91,6 +108,7 @@ export function RefineSidebar({
                 ...filters,
                 countries: [],
                 categories: [],
+                subcategories: [],
                 natures: [],
                 affiliations: [],
               })
@@ -109,6 +127,7 @@ export function RefineSidebar({
         <MultiSelectFilter
           label="Country or territory"
           placeholder="Select country or territory"
+          triggerId="filter-country-trigger"
           options={countryOptions}
           selected={filters.countries}
           onChange={(v) => onChange({ ...filters, countries: v })}

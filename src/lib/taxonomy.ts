@@ -129,12 +129,26 @@ export function verificationLabel(
   return VERIFICATION_LABELS[status];
 }
 
+/** Single trust line: verification status + date (uses lastUpdated as verification date). */
+export function trustBadgeLabel(
+  status: VerificationStatus,
+  source?: string | null,
+  dateLabel?: string | null
+): string {
+  const base = verificationLabel(status, source);
+  if (!dateLabel || dateLabel === "—") return base;
+  return `${base} · ${dateLabel}`;
+}
+
 // Map + page copy lives here so it is edited in one place. No em dashes.
 export const COPY = {
   siteTitle: "Reuse Solutions",
   pageTitle: "Mapping Reuse Solutions in Asia",
   intro:
-    "Across Asia Pacific, communities, cooperatives, businesses, and local groups are building practical reuse systems that keep packaging and products in circulation. This directory brings together refill stations, returnable packaging models, reusable product alternatives, repair services, and second-hand networks, so we can see what already works and connect with the people behind them.",
+    "Communities and businesses across Asia Pacific are building practical reuse systems that keep packaging and products in circulation.",
+  introSecondary:
+    "Explore refill stations, returnable packaging, repair services, and second-hand networks on the map below.",
+  matrixToggle: "How we classify reuse solutions",
   howToSteps: [
     {
       title: "Start on the map",

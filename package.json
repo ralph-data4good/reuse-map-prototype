@@ -8,6 +8,7 @@
     "predev": "node scripts/generate-provider-images.mjs && node scripts/generate-category-icons.mjs",
     "prebuild": "node scripts/generate-provider-images.mjs && node scripts/generate-category-icons.mjs",
     "dev": "next dev",
+    "dev:clean": "node scripts/dev-clean.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

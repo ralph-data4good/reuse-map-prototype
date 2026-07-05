@@ -20,12 +20,14 @@ export function MultiSelectFilter({
   options,
   selected,
   onChange,
+  triggerId,
 }: {
   label: string;
   placeholder: string;
   options: FilterOption[];
   selected: string[];
   onChange: (next: string[]) => void;
+  triggerId?: string;
 }) {
   const toggle = (value: string) => {
     if (selected.includes(value)) onChange(selected.filter((v) => v !== value));
@@ -45,7 +47,9 @@ export function MultiSelectFilter({
       <Popover>
         <PopoverTrigger asChild>
           <button
+            id={triggerId}
             type="button"
+            aria-haspopup="listbox"
             className={cn(
               "flex w-full items-center justify-between gap-2 rounded-btn border border-border bg-white px-3 py-2 text-left text-sm",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/30",

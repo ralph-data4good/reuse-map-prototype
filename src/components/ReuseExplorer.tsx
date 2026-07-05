@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import {
   Loader2,
   AlertTriangle,
@@ -12,16 +13,26 @@ import {
   Plus,
 } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
-import { ViewToggle, type ViewMode } from "@/components/ViewToggle";
+import { ViewToggle } from "@/components/ViewToggle";
 import { RefineSidebar } from "@/components/RefineSidebar";
 import { ReuseTaxonomyGraphic } from "@/components/ReuseTaxonomyGraphic";
 import { HowToSteps } from "@/components/HowToSteps";
 import { ResultsBar } from "@/components/ResultsBar";
+import { ActiveFilterChips } from "@/components/ActiveFilterChips";
+import { SortControl } from "@/components/SortControl";
 import { GalleryView } from "@/components/views/GalleryView";
 import { TableView } from "@/components/views/TableView";
 import { fetchReuseSolutions, applyFilters } from "@/lib/data";
-import { EMPTY_FILTERS, type Filters, type ReuseSolution } from "@/lib/types";
+import { sortSolutions } from "@/lib/sort-solutions";
+import type { ReuseSolution } from "@/lib/types";
 import { COPY } from "@/lib/taxonomy";
+import { useExplorerUrlState } from "@/hooks/useExplorerUrlState";
+import {
+  HOWTO_COLLAPSED_KEY,
+  scrollIntoViewRespectingMotion,
+} from "@/lib/motion";
+import { contributeUrl } from "@/lib/contribute-link";
+import { solutionDetailPath } from "@/lib/solution-paths";
 
 // Map view is client-only (Mapbox touches the DOM), so load it without SSR.
 const MapView = dynamic(
@@ -29,7 +40,7 @@ const MapView = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[600px] items-center justify-center rounded-card border border-border bg-white text-muted">
+      <div className="flex h-[520px] items-center justify-center rounded-card border border-border bg-white text-muted">
         <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading map…
       </div>
     ),
@@ -37,18 +48,65 @@ const MapView = dynamic(
 );
 
 export function ReuseExplorer() {
+  const router = useRouter();
   const [all, setAll] = useState<ReuseSolution[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [view, setView] = useState<ViewMode>("map");
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [showHowTo, setShowHowTo] = useState(false);
+  const {
+    view,
+    setView,
+    filters,
+    setFilters,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    sort,
+    setSort,
+    clearFilters,
+    toggleCategory,
+    showAllCategories,
+    toggleSubcategory,
+    hasActiveFilters,
+    availableCountries,
+  } = useExplorerUrlState(all, loading);
+
+  const [showHowTo, setShowHowTo] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(HOWTO_COLLAPSED_KEY) !== "true";
+  });
+  const [showMatrix, setShowMatrix] = useState(false);
+  const [refineHighlight, setRefineHighlight] = useState(false);
+  const [refineMobileOpen, setRefineMobileOpen] = useState(false);
+
+  const setHowToExpanded = useCallback((expanded: boolean) => {
+    setShowHowTo(expanded);
+    localStorage.setItem(HOWTO_COLLAPSED_KEY, expanded ? "false" : "true");
+  }, []);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("reuse-matrix-expanded");
+    if (stored !== null) {
+      setShowMatrix(stored === "true");
+      return;
+    }
+    // Default collapsed so map/results sit higher on laptop viewports.
+    setShowMatrix(false);
+  }, []);
+
+  const toggleMatrix = () => {
+    setShowMatrix((v) => {
+      const next = !v;
+      sessionStorage.setItem("reuse-matrix-expanded", String(next));
+      return next;
+    });
+  };
 
   // Floating "jump to map" button: only shown until the controls scroll into view.
   const controlsRef = useRef<HTMLDivElement>(null);
+  const mapResultsRef = useRef<HTMLElement>(null);
+  const refineAsideRef = useRef<HTMLElement>(null);
   const [showJump, setShowJump] = useState(true);
 
   useEffect(() => {
@@ -63,31 +121,64 @@ export function ReuseExplorer() {
   }, []);
 
   const scrollToControls = () => {
-    controlsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollIntoViewRespectingMotion(controlsRef.current, { block: "start" });
   };
 
   const scrollToContribute = () => {
-    document
-      .getElementById("contribute")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollIntoViewRespectingMotion(document.getElementById("contribute"), {
+      block: "start",
+    });
   };
 
-  const hasActiveFilters =
-    filters.countries.length > 0 ||
-    filters.categories.length > 0 ||
-    filters.natures.length > 0 ||
-    filters.affiliations.length > 0 ||
-    filters.search.trim().length > 0;
-
-  const clearFilters = () =>
-    setFilters((f) => ({
-      ...f,
-      search: "",
-      countries: [],
-      categories: [],
-      natures: [],
-      affiliations: [],
-    }));
+  const handleHowToStep = useCallback(
+    (index: number) => {
+      switch (index) {
+        case 0:
+          setView("map");
+          scrollIntoViewRespectingMotion(mapResultsRef.current, {
+            block: "start",
+          });
+          break;
+        case 1:
+          scrollIntoViewRespectingMotion(refineAsideRef.current, {
+            block: "start",
+          });
+          setRefineMobileOpen(true);
+          setRefineHighlight(true);
+          window.setTimeout(() => setRefineHighlight(false), 1500);
+          window.setTimeout(() => {
+            document.getElementById("filter-country-trigger")?.focus();
+          }, 300);
+          break;
+        case 2:
+          scrollIntoViewRespectingMotion(controlsRef.current, {
+            block: "start",
+          });
+          window.setTimeout(() => {
+            document.getElementById(`view-toggle-${view}`)?.focus();
+          }, 300);
+          break;
+        case 3: {
+          const top = sortSolutions(all, "verified")[0];
+          if (top) {
+            router.push(solutionDetailPath(top.slug));
+          } else {
+            scrollIntoViewRespectingMotion(mapResultsRef.current, {
+              block: "start",
+            });
+          }
+          break;
+        }
+        case 4:
+          router.push(contributeUrl());
+          scrollToContribute();
+          break;
+        default:
+          break;
+      }
+    },
+    [all, router, setView, view]
+  );
 
   useEffect(() => {
     let active = true;
@@ -103,38 +194,26 @@ export function ReuseExplorer() {
   }, []);
 
   const filtered = useMemo(() => applyFilters(all, filters), [all, filters]);
+  const sorted = useMemo(
+    () => sortSolutions(filtered, sort),
+    [filtered, sort]
+  );
 
-  // Countries present in the data (narrows the country filter list).
-  const availableCountries = useMemo(() => {
-    const set = new Set<string>();
-    all.forEach((s) => {
-      if (s.country) set.add(s.country);
-      s.operatingCountries.forEach((c) => set.add(c));
-    });
-    return Array.from(set).sort();
-  }, [all]);
-
-  // Affiliations present in the data (narrows the affiliation filter list).
   const availableAffiliations = useMemo(() => {
     const set = new Set<string>();
     all.forEach((s) => s.affiliations.forEach((a) => set.add(a)));
     return Array.from(set);
   }, [all]);
 
-  // Reset to first page when filters or page size change.
-  useEffect(() => {
-    setPage(1);
-  }, [filters, pageSize, view]);
-
   const paginated = view !== "map";
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const pageItems = paginated
-    ? filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-    : filtered;
+    ? sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    : sorted;
 
   return (
-    <div className="container py-6">
+    <div className="container py-4">
       {/* Breadcrumb */}
       <nav
         aria-label="Breadcrumb"
@@ -152,43 +231,72 @@ export function ReuseExplorer() {
         <span className="font-semibold text-ink">Reuse Solutions</span>
       </nav>
 
-      {/* Landing banner: taxonomy graphic (1/3) + standout title and blurb (2/3) */}
-      <div className="mb-6 overflow-hidden rounded-3xl bg-gradient-to-br from-navy to-navy-hover p-6 shadow-pop sm:p-8">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-center">
-          <ReuseTaxonomyGraphic className="lg:col-span-1" />
-          <div className="lg:col-span-2">
-            <h1 className="font-heading text-3xl font-bold leading-tight text-white sm:text-4xl">
-              {COPY.pageTitle}
-            </h1>
-            <p className="mt-3 text-base leading-relaxed text-white/85 sm:text-lg">
-              {COPY.intro}
-            </p>
+      {/* Compact hero: title, short intro, CTAs; matrix behind toggle */}
+      <div className="mb-4 overflow-hidden rounded-3xl bg-gradient-to-br from-navy to-navy-hover p-5 shadow-pop sm:p-6">
+        <div className="max-w-3xl">
+          <h1 className="font-heading text-2xl font-bold leading-tight text-white sm:text-3xl">
+            {COPY.pageTitle}
+          </h1>
+          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
+            {COPY.intro}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-white/85 sm:text-base">
+            {COPY.introSecondary}
+          </p>
 
-            {showHowTo && <HowToSteps steps={COPY.howToSteps} />}
+          {showMatrix && (
+            <div className="mt-4 max-w-md">
+              <ReuseTaxonomyGraphic />
+            </div>
+          )}
 
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setShowHowTo((v) => !v)}
-                aria-expanded={showHowTo}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-              >
-                {showHowTo ? "Show less" : "How to use this directory"}
-                {showHowTo ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </button>
+          {showHowTo && (
+            <div id="how-to-panel" className="mt-4">
+              <HowToSteps
+                steps={COPY.howToSteps}
+                onStepAction={handleHowToStep}
+              />
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={toggleMatrix}
+              aria-expanded={showMatrix}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+            >
+              {showMatrix ? "Hide classification" : COPY.matrixToggle}
+              {showMatrix ? (
+                <ChevronUp className="h-4 w-4" aria-hidden />
+              ) : (
+                <ChevronDown className="h-4 w-4" aria-hidden />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setHowToExpanded(!showHowTo)}
+              aria-expanded={showHowTo}
+              aria-controls="how-to-panel"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+            >
+              {showHowTo ? "Show less" : "How to use this directory"}
+              {showHowTo ? (
+                <ChevronUp className="h-4 w-4" aria-hidden />
+              ) : (
+                <ChevronDown className="h-4 w-4" aria-hidden />
+              )}
+            </button>
+            {!showHowTo && (
               <button
                 type="button"
                 onClick={scrollToControls}
-                className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+                className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
               >
                 Explore the map
-                <ArrowDown className="h-4 w-4" />
+                <ArrowDown className="h-4 w-4" aria-hidden />
               </button>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -210,18 +318,33 @@ export function ReuseExplorer() {
           onChange={setFilters}
           availableCountries={availableCountries}
           availableAffiliations={availableAffiliations}
+          highlight={refineHighlight}
+          asideRef={refineAsideRef}
+          mobileOpen={refineMobileOpen}
         />
 
-        <section className="space-y-4">
-          <ResultsBar
-            total={filtered.length}
-            shown={pageItems.length}
-            page={currentPage}
-            pageSize={pageSize}
-            paginated={paginated}
-            onPageChange={setPage}
-            onPageSizeChange={setPageSize}
+        <section ref={mapResultsRef} id="map-results" className="space-y-4 scroll-mt-20">
+          <ActiveFilterChips
+            filters={filters}
+            onChange={setFilters}
+            onClearAll={clearFilters}
           />
+
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <ResultsBar
+              total={sorted.length}
+              shown={pageItems.length}
+              page={currentPage}
+              pageSize={pageSize}
+              paginated={paginated}
+              showPageSize={view === "table"}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
+            {view !== "map" && (
+              <SortControl value={sort} onChange={setSort} />
+            )}
+          </div>
 
           {error && (
             <div className="flex items-start gap-2 rounded-card border border-chip-unverified-bg bg-chip-unverified-bg/60 p-4 text-sm text-chip-unverified-fg">
@@ -236,18 +359,33 @@ export function ReuseExplorer() {
               solutions…
             </div>
           ) : view === "map" ? (
-            <MapView items={filtered} />
+            <MapView
+              items={sorted}
+              filters={filters}
+              hasActiveFilters={hasActiveFilters}
+              selectedCategories={filters.categories}
+              onToggleCategory={toggleCategory}
+              onShowAllCategories={showAllCategories}
+            />
           ) : view === "gallery" ? (
             <GalleryView
               items={pageItems}
+              filters={filters}
               onClearFilters={clearFilters}
               hasActiveFilters={hasActiveFilters}
+              activeSubcategories={filters.subcategories}
+              onSubcategorySelect={toggleSubcategory}
             />
           ) : (
             <TableView
               items={pageItems}
+              filters={filters}
               onClearFilters={clearFilters}
               hasActiveFilters={hasActiveFilters}
+              activeSubcategories={filters.subcategories}
+              onSubcategorySelect={toggleSubcategory}
+              sort={sort}
+              onSort={setSort}
             />
           )}
 
@@ -269,7 +407,7 @@ export function ReuseExplorer() {
         <button
           type="button"
           onClick={scrollToControls}
-          className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-pop transition-colors hover:bg-navy-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-pop motion-safe:transition-colors hover:bg-navy-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2"
           aria-label="Scroll down to the map and results"
         >
           <ArrowDown className="h-4 w-4" />

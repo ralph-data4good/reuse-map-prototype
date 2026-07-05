@@ -109,6 +109,32 @@
   display: none;
 }
 
+/* One-shot highlight for the how-to "Filter" step. */
+@keyframes refine-panel-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 75, 0);
+  }
+  40% {
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.95);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 75, 0);
+  }
+}
+.refine-panel-pulse {
+  animation: refine-panel-pulse 1.5s ease-out 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+  .refine-panel-pulse {
+    animation: none;
+    box-shadow: 0 0 0 2px rgba(201, 162, 75, 0.95);
+  }
+}
+
 /* Utility for line clamping (Tailwind ships line-clamp but keep a safe fallback). */
 .clamp-2 {
   display: -webkit-box;

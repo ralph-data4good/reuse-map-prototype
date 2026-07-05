@@ -1,38 +1,53 @@
 "use client";
 
-import { Fragment } from "react";
-import { InfoTooltip } from "@/components/ui/info-tooltip";
-import { getSubCategoryDefinition, getStableKey } from "@/lib/tooltips";
 import { cn } from "@/lib/utils";
+import { getSubCategoryDefinition } from "@/lib/tooltips";
 
-// Renders a comma-separated list of sub-categories, each an accessible tooltip
-// term (hover / focus / tap) sourced from the canonical CSV definitions.
 export function SubCategoryTerms({
   items,
+  activeSubcategories = [],
+  onSelect,
   className,
 }: {
   items: string[];
+  activeSubcategories?: string[];
+  onSelect?: (subcategory: string) => void;
   className?: string;
 }) {
   if (!items.length) return null;
+
+  if (!onSelect) {
+    return (
+      <span className={cn("text-muted", className)}>
+        {items.join(", ")}
+      </span>
+    );
+  }
+
   return (
-    <span className={className}>
-      {items.map((sub, i) => (
-        <Fragment key={sub}>
-          {i > 0 && <span aria-hidden="true">, </span>}
-          <InfoTooltip
-            content={getSubCategoryDefinition(sub)}
-            ariaLabel={`${sub} definition`}
-            dataKey={getStableKey(sub)}
+    <span className={cn("flex flex-wrap gap-1.5", className)}>
+      {items.map((sub) => {
+        const active = activeSubcategories.includes(sub);
+        return (
+          <button
+            key={sub}
+            type="button"
+            title={getSubCategoryDefinition(sub)}
+            aria-pressed={active}
+            aria-label={`Filter by ${sub}`}
+            onClick={() => onSelect(sub)}
             className={cn(
-              "align-baseline underline decoration-dotted decoration-muted underline-offset-2",
-              "hover:decoration-navy"
+              "rounded-full border px-2 py-0.5 text-[11px] font-medium leading-snug transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
+              active
+                ? "border-navy bg-navy text-white"
+                : "border-border bg-cream text-muted hover:border-navy/30 hover:text-ink"
             )}
           >
-            <span>{sub}</span>
-          </InfoTooltip>
-        </Fragment>
-      ))}
+            {sub}
+          </button>
+        );
+      })}
     </span>
   );
 }

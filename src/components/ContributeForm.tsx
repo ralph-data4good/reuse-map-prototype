@@ -14,7 +14,13 @@ import {
 // Shown when no NoteForms embed URL is configured. Submissions are intentionally
 // not persisted (public write is disabled); this exists to scaffold and preview
 // the exact fields the NoteForms form should collect.
-function Field({ field }: { field: ContributeField }) {
+function Field({
+  field,
+  defaultValue,
+}: {
+  field: ContributeField;
+  defaultValue?: string;
+}) {
   const id = `contribute-${field.name}`;
   const base =
     "w-full rounded-btn border border-border bg-white px-3 py-2 text-sm text-ink placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/30";
@@ -30,11 +36,18 @@ function Field({ field }: { field: ContributeField }) {
           name={field.name}
           required={field.required}
           placeholder={field.placeholder}
+          defaultValue={defaultValue}
           rows={4}
           className={base}
         />
       ) : field.type === "select" ? (
-        <select id={id} name={field.name} required={field.required} className={base}>
+        <select
+          id={id}
+          name={field.name}
+          required={field.required}
+          defaultValue={defaultValue ?? ""}
+          className={base}
+        >
           <option value="">Select {field.label.toLowerCase()}</option>
           {field.options?.map((o) => (
             <option key={o} value={o}>
@@ -49,6 +62,7 @@ function Field({ field }: { field: ContributeField }) {
           type={field.type === "url" ? "url" : field.type}
           required={field.required}
           placeholder={field.placeholder}
+          defaultValue={defaultValue}
           className={base}
         />
       )}
@@ -57,7 +71,13 @@ function Field({ field }: { field: ContributeField }) {
   );
 }
 
-export function ContributeForm() {
+export function ContributeForm({
+  defaultCategory,
+  defaultCountry,
+}: {
+  defaultCategory?: string | null;
+  defaultCountry?: string | null;
+} = {}) {
   const [submitted, setSubmitted] = useState(false);
 
   if (submitted) {
@@ -100,16 +120,25 @@ export function ContributeForm() {
                 </span>
               </legend>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {fields.map((field) => (
-                  <div
-                    key={field.name}
-                    className={
-                      field.type === "textarea" ? "sm:col-span-2" : undefined
-                    }
-                  >
-                    <Field field={field} />
-                  </div>
-                ))}
+                {fields.map((field) => {
+                  let defaultValue: string | undefined;
+                  if (field.name === "reuse_framework_category" && defaultCategory) {
+                    defaultValue = defaultCategory;
+                  }
+                  if (field.name === "country" && defaultCountry) {
+                    defaultValue = defaultCountry;
+                  }
+                  return (
+                    <div
+                      key={field.name}
+                      className={
+                        field.type === "textarea" ? "sm:col-span-2" : undefined
+                      }
+                    >
+                      <Field field={field} defaultValue={defaultValue} />
+                    </div>
+                  );
+                })}
               </div>
             </fieldset>
           );

@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ImageOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { categoryDefaultImage, solutionImageSrc } from "@/lib/utils";
 import { COPY } from "@/lib/taxonomy";
 import { getCategoryColor } from "@/lib/reuse-categories";
 
-// Shows the best image for a solution (explicit URL, then a provider photo
-// matched by name, then the per-category default SVG), then a "No image" state
-// tinted with the category color. Handles broken URLs too.
 export function SolutionImage({
   imageUrl,
   serviceProviderName,
@@ -17,6 +15,8 @@ export function SolutionImage({
   category,
   alt,
   className,
+  sizes = "(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw",
+  priority = false,
 }: {
   imageUrl?: string | null;
   serviceProviderName?: string | null;
@@ -24,6 +24,8 @@ export function SolutionImage({
   category?: string | null;
   alt: string;
   className?: string;
+  sizes?: string;
+  priority?: boolean;
 }) {
   const fallback = categoryDefaultImage(categorySlug);
   const [src, setSrc] = useState<string>(
@@ -40,22 +42,27 @@ export function SolutionImage({
         )}
         style={{ backgroundColor: getCategoryColor(category) }}
       >
-        <ImageOff className="h-6 w-6 opacity-80" />
+        <ImageOff className="h-6 w-6 opacity-80" aria-hidden />
         <span className="text-xs font-medium">{COPY.noImage}</span>
       </div>
     );
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      className={cn("object-cover", className)}
-      onError={() => {
-        if (src !== fallback) setSrc(fallback);
-        else setFailed(true);
-      }}
-    />
+    <div className={cn("relative overflow-hidden", className)}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        loading={priority ? "eager" : "lazy"}
+        unoptimized
+        className="object-cover"
+        onError={() => {
+          if (src !== fallback) setSrc(fallback);
+          else setFailed(true);
+        }}
+      />
+    </div>
   );
 }

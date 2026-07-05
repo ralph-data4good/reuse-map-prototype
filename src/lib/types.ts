@@ -3,8 +3,11 @@ import type { VerificationStatus } from "./taxonomy";
 // Flat shape the views consume. Built from the joined Supabase query.
 export type ReuseSolution = {
   id: string;
+  slug: string;
   name: string;
   description: string | null;
+  /** Optional reference URL stored in directories.details.reference_url. */
+  referenceUrl: string | null;
 
   // Primary category (from directory_types) drives pin color + main badge.
   primaryCategory: string | null;
@@ -40,6 +43,7 @@ export type ReuseSolution = {
 export type Filters = {
   countries: string[];
   categories: string[];
+  subcategories: string[];
   natures: string[];
   affiliations: string[];
   search: string;
@@ -48,6 +52,7 @@ export type Filters = {
 export const EMPTY_FILTERS: Filters = {
   countries: [],
   categories: [],
+  subcategories: [],
   natures: [],
   affiliations: [],
   search: "",

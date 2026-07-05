@@ -1,16 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ContributeForm } from "@/components/ContributeForm";
 import { COPY } from "@/lib/taxonomy";
 
-// NoteForms embed URL (see .env.local). When set, the real NoteForms form is
-// embedded; otherwise the built-in scaffolded form (from the field spec) shows.
 const EMBED_URL = process.env.NEXT_PUBLIC_NOTEFORMS_EMBED_URL;
 
-export function ContributeCTA() {
-  const [open, setOpen] = useState(false);
+function ContributeCTAInner() {
+  const searchParams = useSearchParams();
+  const defaultCategory = searchParams.get("contributeCategory");
+  const defaultCountry = searchParams.get("contributeCountry");
+  const shouldOpen = searchParams.get("contribute") === "1";
+
+  const [open, setOpen] = useState(shouldOpen);
+
+  useEffect(() => {
+    if (shouldOpen) {
+      setOpen(true);
+      document.getElementById("contribute")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [shouldOpen]);
+
+  const prefillHint =
+    defaultCategory || defaultCountry
+      ? [defaultCategory, defaultCountry].filter(Boolean).join(" · ")
+      : null;
 
   return (
     <section id="contribute" className="mt-12 scroll-mt-20 bg-navy">
@@ -28,6 +44,11 @@ export function ContributeCTA() {
           </Button>
         ) : (
           <div className="mt-4 w-full max-w-3xl">
+            {prefillHint && (
+              <p className="mb-3 text-sm text-white/70">
+                Suggested context: <span className="font-semibold text-white">{prefillHint}</span>
+              </p>
+            )}
             {EMBED_URL ? (
               <>
                 <div className="overflow-hidden rounded-card border border-white/20 bg-white shadow-pop">
@@ -52,7 +73,10 @@ export function ContributeCTA() {
               </>
             ) : (
               <>
-                <ContributeForm />
+                <ContributeForm
+                  defaultCategory={defaultCategory}
+                  defaultCountry={defaultCountry}
+                />
                 <p className="mt-3 text-xs text-white/60">
                   Preview form. Connect NEXT_PUBLIC_NOTEFORMS_EMBED_URL in
                   .env.local to embed the live NoteForms form here.
@@ -63,5 +87,13 @@ export function ContributeCTA() {
         )}
       </div>
     </section>
+  );
+}
+
+export function ContributeCTA() {
+  return (
+    <Suspense fallback={null}>
+      <ContributeCTAInner />
+    </Suspense>
   );
 }

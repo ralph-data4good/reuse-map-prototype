@@ -1,4 +1,5 @@
 import { getSupabase } from "./supabase";
+import { slugifyEntry } from "./solution-paths";
 import type { ReuseSolution } from "./types";
 import type { VerificationStatus } from "./taxonomy";
 
@@ -9,12 +10,13 @@ const REUSE_GROUP_SLUG = "reuse-solutions";
 type Row = {
   id: string;
   name: string;
+  slug: string | null;
   description: string | null;
   verification_status: VerificationStatus | null;
   verification_status_source: string | null;
   has_physical_location: boolean | null;
   updated_at: string | null;
-  details: { image_url?: string } | null;
+  details: { image_url?: string; reference_url?: string } | null;
   directory_type:
     | {
         name: string | null;
@@ -76,7 +78,7 @@ function normalizeCountry(name?: string | null): string | null {
 // Explicit FK hints disambiguate the two directories <-> directory_locations
 // relationships (directory_location_id vs directory_locations.directory_id).
 const SELECT = `
-  id, name, description, verification_status, verification_status_source,
+  id, name, slug, description, verification_status, verification_status_source,
   has_physical_location, updated_at, details,
   directory_type:directory_types!directories_directory_type_id_fkey (
     name, slug, group:directory_groups ( slug )
@@ -93,6 +95,49 @@ export type FetchResult = {
   error: string | null;
   configured: boolean;
 };
+
+function mapRowToSolution(r: Row): ReuseSolution | null {
+  const group = first(r.directory_type?.group);
+  if (group?.slug !== REUSE_GROUP_SLUG) return null;
+
+  const reuse = first(r.reuse);
+  const loc = r.location;
+  const slug =
+    r.slug?.trim() ||
+    slugifyEntry(reuse?.service_provider_name, r.name) ||
+    slugifyEntry(r.name);
+
+  return {
+    id: r.id,
+    slug,
+    name: r.name,
+    description: r.description,
+    referenceUrl: r.details?.reference_url ?? null,
+    primaryCategory: r.directory_type?.name ?? null,
+    primaryCategorySlug: r.directory_type?.slug ?? null,
+    categories: reuse?.reuse_framework_categories ?? [],
+    subCategories: reuse?.sub_categories ?? [],
+    naturesOfService: reuse?.natures_of_service ?? [],
+    affiliations: reuse?.affiliations ?? [],
+    operatingCountries: (reuse?.operating_countries ?? []).map(
+      (c) => normalizeCountry(c) as string
+    ),
+    serviceProviderName: reuse?.service_provider_name ?? null,
+    city: loc?.city ?? null,
+    province: loc?.province ?? null,
+    country: normalizeCountry(loc?.country?.name),
+    countryIso2: loc?.country?.iso2 ?? null,
+    latitude: loc?.latitude ?? null,
+    longitude: loc?.longitude ?? null,
+    verificationStatus: (r.verification_status ??
+      "unverified") as VerificationStatus,
+    verificationSource: r.verification_status_source ?? null,
+    hasPhysicalLocation: r.has_physical_location ?? true,
+    lastUpdated: reuse?.last_updated ?? r.updated_at,
+    updatedAt: r.updated_at,
+    imageUrl: r.details?.image_url ?? null,
+  };
+}
 
 export async function fetchReuseSolutions(): Promise<FetchResult> {
   const supabase = getSupabase();
@@ -122,43 +167,17 @@ export async function fetchReuseSolutions(): Promise<FetchResult> {
   const rows = (data ?? []) as unknown as Row[];
 
   const solutions: ReuseSolution[] = rows
-    .filter((r) => {
-      const group = first(r.directory_type?.group);
-      return group?.slug === REUSE_GROUP_SLUG;
-    })
-    .map((r) => {
-      const reuse = first(r.reuse);
-      const loc = r.location;
-      return {
-        id: r.id,
-        name: r.name,
-        description: r.description,
-        primaryCategory: r.directory_type?.name ?? null,
-        primaryCategorySlug: r.directory_type?.slug ?? null,
-        categories: reuse?.reuse_framework_categories ?? [],
-        subCategories: reuse?.sub_categories ?? [],
-        naturesOfService: reuse?.natures_of_service ?? [],
-        affiliations: reuse?.affiliations ?? [],
-        operatingCountries: (reuse?.operating_countries ?? []).map(
-          (c) => normalizeCountry(c) as string
-        ),
-        serviceProviderName: reuse?.service_provider_name ?? null,
-        city: loc?.city ?? null,
-        province: loc?.province ?? null,
-        country: normalizeCountry(loc?.country?.name),
-        countryIso2: loc?.country?.iso2 ?? null,
-        latitude: loc?.latitude ?? null,
-        longitude: loc?.longitude ?? null,
-        verificationStatus: (r.verification_status ?? "unverified") as VerificationStatus,
-        verificationSource: r.verification_status_source ?? null,
-        hasPhysicalLocation: r.has_physical_location ?? true,
-        lastUpdated: reuse?.last_updated ?? r.updated_at,
-        updatedAt: r.updated_at,
-        imageUrl: r.details?.image_url ?? null,
-      };
-    });
+    .map(mapRowToSolution)
+    .filter((s): s is ReuseSolution => s != null);
 
   return { data: solutions, error: null, configured: true };
+}
+
+export async function fetchReuseSolutionBySlug(
+  slug: string
+): Promise<ReuseSolution | null> {
+  const { data } = await fetchReuseSolutions();
+  return data.find((s) => s.slug === slug) ?? null;
 }
 
 // Pure client-side filtering. Uses array-overlap logic: a solution matches a
@@ -168,6 +187,7 @@ export function applyFilters(
   filters: {
     countries: string[];
     categories: string[];
+    subcategories: string[];
     natures: string[];
     affiliations: string[];
     search: string;
@@ -189,6 +209,10 @@ export function applyFilters(
           ? [s.primaryCategory]
           : [];
       if (!filters.categories.some((c) => cats.includes(c))) return false;
+    }
+    if (filters.subcategories.length) {
+      if (!filters.subcategories.some((sc) => s.subCategories.includes(sc)))
+        return false;
     }
     if (filters.natures.length) {
       if (!filters.natures.some((n) => s.naturesOfService.includes(n))) return false;

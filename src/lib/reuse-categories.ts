@@ -23,13 +23,15 @@ export type ReuseCategory =
 export interface ReuseCategoryConfig {
   /** Hex color used for pins and the legend swatch. */
   color: string;
+  /** Optional badge label/icon color when auto-contrast picks the wrong tone. */
+  chipTextColor?: string;
   /** Sub-categories from the Reuse Framework. */
   subCategories: string[];
 }
 
 export const REUSE_CATEGORIES: Record<ReuseCategory, ReuseCategoryConfig> = {
   "Packaging Reuse": {
-    color: "#1E5F74",
+    color: "#355E70",
     subCategories: [
       "Pre-filled Reuse Systems",
       "Onsite Reuse Systems",
@@ -38,23 +40,24 @@ export const REUSE_CATEGORIES: Record<ReuseCategory, ReuseCategoryConfig> = {
       "Secondary Packaging Reuse Systems",
     ],
   },
-  "Refill": {
-    color: "#C9A24B",
+  Refill: {
+    color: "#C1A158",
+    chipTextColor: "#FFFFFF",
     subCategories: ["Onsite Refill System", "Refill at Home System"],
   },
   "Product Reuse": {
-    color: "#4E9F3D",
+    color: "#639B4A",
     subCategories: ["Product Reuse System"],
   },
   "Use of Reusable Product Alternatives": {
-    color: "#C56B3E",
+    color: "#B76F47",
     subCategories: [
       "Reusable Product Alternatives (Self-Maintained)",
       "Reusable Product Alternatives (Service-Maintained)",
     ],
   },
   "Transfer-based Reuse": {
-    color: "#6B4E9F",
+    color: "#665096",
     subCategories: ["Transfer-based Reuse Systems"],
   },
 };
@@ -67,6 +70,55 @@ export const REUSE_CATEGORY_NAMES = Object.keys(
   REUSE_CATEGORIES
 ) as ReuseCategory[];
 
+/** URL-safe slugs aligned with directory_types.slug in Supabase. */
+export const CATEGORY_SLUG_BY_NAME: Record<ReuseCategory, string> = {
+  "Packaging Reuse": "packaging-reuse",
+  Refill: "refill",
+  "Product Reuse": "product-reuse",
+  "Use of Reusable Product Alternatives": "reusable-product-alternatives",
+  "Transfer-based Reuse": "transfer-based-reuse",
+};
+
+export const CATEGORY_NAME_BY_SLUG: Record<string, ReuseCategory> =
+  Object.fromEntries(
+    REUSE_CATEGORY_NAMES.map((name) => [CATEGORY_SLUG_BY_NAME[name], name])
+  ) as Record<string, ReuseCategory>;
+
+export function getCategorySlug(name?: string | null): string | null {
+  if (!name) return null;
+  return CATEGORY_SLUG_BY_NAME[name as ReuseCategory] ?? null;
+}
+
+export function resolveCategoryName(token: string): ReuseCategory | null {
+  const normalized = token.trim().toLowerCase().replace(/_/g, "-");
+  return CATEGORY_NAME_BY_SLUG[normalized] ?? null;
+}
+
+/** Toggle one category in the inclusive multi-select (empty = all visible). */
+export function toggleCategoryFilter(
+  category: string,
+  selected: string[]
+): string[] {
+  const visible =
+    selected.length === 0
+      ? [...REUSE_CATEGORY_NAMES]
+      : selected.filter((c) => REUSE_CATEGORY_NAMES.includes(c as ReuseCategory));
+  const isVisible = visible.includes(category as ReuseCategory);
+  const next = isVisible
+    ? visible.filter((c) => c !== category)
+    : [...visible, category];
+  if (next.length === REUSE_CATEGORY_NAMES.length) return [];
+  return next;
+}
+
+export function isCategoryVisible(
+  category: string,
+  selected: string[]
+): boolean {
+  if (selected.length === 0) return true;
+  return selected.includes(category);
+}
+
 /**
  * 1. Custom HTML / SVG markers.
  * Look up a color when you build each marker element.
@@ -76,6 +128,55 @@ export function getCategoryColor(category?: string | null): string {
     REUSE_CATEGORIES[category as ReuseCategory]?.color ??
     DEFAULT_CATEGORY_COLOR
   );
+}
+
+const CHIP_LIGHT = "#FFFFFF";
+const CHIP_DARK = "#1A1A1A";
+const AA_NORMAL_TEXT = 4.5;
+
+function srgbChannel(value: number): number {
+  const c = value / 255;
+  return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+}
+
+function relativeLuminance(hex: string): number {
+  const [r, g, b] = hexToRgb(hex);
+  return (
+    0.2126 * srgbChannel(r) +
+    0.7152 * srgbChannel(g) +
+    0.0722 * srgbChannel(b)
+  );
+}
+
+function contrastRatio(foreground: string, background: string): number {
+  const fg = relativeLuminance(foreground);
+  const bg = relativeLuminance(background);
+  const lighter = Math.max(fg, bg);
+  const darker = Math.min(fg, bg);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/** Chip foreground/background tuned for WCAG AA contrast on category colors. */
+export function getCategoryChipColors(category?: string | null): {
+  backgroundColor: string;
+  color: string;
+  iconColor: string;
+} {
+  const backgroundColor = getCategoryColor(category);
+  const config =
+    category && category in REUSE_CATEGORIES
+      ? REUSE_CATEGORIES[category as ReuseCategory]
+      : null;
+  if (config?.chipTextColor) {
+    return {
+      backgroundColor,
+      color: config.chipTextColor,
+      iconColor: config.chipTextColor,
+    };
+  }
+  const whiteOk = contrastRatio(CHIP_LIGHT, backgroundColor) >= AA_NORMAL_TEXT;
+  const color = whiteOk ? CHIP_LIGHT : CHIP_DARK;
+  return { backgroundColor, color, iconColor: color };
 }
 
 function hexToRgb(hex: string): [number, number, number] {

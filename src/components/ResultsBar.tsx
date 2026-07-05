@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button";
 
 const PAGE_SIZES = [10, 20, 50];
 
-// ZWA-style results header: "Showing X of Y", page indicator, rows-per-page,
-// Prev/Next. Pagination applies to Gallery and Table (Map shows all pins).
 export function ResultsBar({
   total,
   shown,
   page,
   pageSize,
   paginated,
+  showPageSize,
   onPageChange,
   onPageSizeChange,
 }: {
@@ -20,6 +19,7 @@ export function ResultsBar({
   page: number;
   pageSize: number;
   paginated: boolean;
+  showPageSize?: boolean;
   onPageChange: (p: number) => void;
   onPageSizeChange: (s: number) => void;
 }) {
@@ -41,23 +41,23 @@ export function ResultsBar({
       </div>
 
       {paginated && (
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-muted">
-              Rows per page
-            </span>
-            <select
-              value={pageSize}
-              onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="rounded-btn border border-border bg-white px-2 py-1.5 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/30"
-            >
-              {PAGE_SIZES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex flex-wrap items-center gap-3">
+          {showPageSize && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-muted">Per page</span>
+              <select
+                value={pageSize}
+                onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                className="rounded-btn border border-border bg-white px-2 py-1.5 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/30"
+              >
+                {PAGE_SIZES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="flex items-center gap-1">
             <Button
               variant="outline"
