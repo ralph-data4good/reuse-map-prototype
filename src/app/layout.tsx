@@ -21,6 +21,10 @@ export const metadata: Metadata = {
   title: "Reuse Solutions | Zero Waste Asia",
   description:
     "Explore reuse, refill, and second-hand solutions across Asia-Pacific.",
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
