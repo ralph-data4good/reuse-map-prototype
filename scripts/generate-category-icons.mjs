@@ -22,13 +22,21 @@ const ICON_FILES = {
 };
 
 function extractInner(svg) {
-  const match = svg.match(/<g[^>]*>([\s\S]*?)<\/g>/);
-  return match ? match[1].trim() : "";
+  const gMatch = svg.match(/<g[^>]*>([\s\S]*?)<\/g>/);
+  if (gMatch) return gMatch[1].trim();
+
+  const withoutComments = svg.replace(/<!--[\s\S]*?-->/g, "");
+  const innerMatch = withoutComments.match(/<svg[^>]*>([\s\S]*?)<\/svg>/i);
+  if (!innerMatch) return "";
+  return innerMatch[1].trim();
 }
 
 function extractStrokeWidth(svg) {
-  const match = svg.match(/<g[^>]*stroke-width="([^"]+)"/);
-  return match ? match[1] : "1.8";
+  const gMatch = svg.match(/<g[^>]*stroke-width="([^"]+)"/);
+  if (gMatch) return gMatch[1];
+  const svgMatch = svg.match(/<svg[^>]*stroke-width="([^"]+)"/);
+  if (svgMatch) return svgMatch[1];
+  return "1.8";
 }
 
 const entries = Object.entries(ICON_FILES).map(([label, file]) => {

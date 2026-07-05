@@ -1,15 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-labelledby="title desc">
-  <title id="title">Packaging Reuse</title>
-  <desc id="desc">A bottle with circular arrows showing packaging being reused.</desc>
-  <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9.25 9.25h5.5"/>
-    <path d="M10 9.25V7.1h4v2.15"/>
-    <path d="M9 9.25h6l.65 8.9A1.7 1.7 0 0 1 13.95 20h-3.9a1.7 1.7 0 0 1-1.7-1.85L9 9.25Z"/>
-    <path d="M5.25 10.75a7.25 7.25 0 0 1 11.2-5.9"/>
-    <path d="M16.75 4.75h-3.05"/>
-    <path d="M16.75 4.75v3.05"/>
-    <path d="M18.75 13.25a7.25 7.25 0 0 1-11.2 5.9"/>
-    <path d="M7.25 19.25h3.05"/>
-    <path d="M7.25 19.25V16.2"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- bottle -->
+  <path d="M10.8 5.2h2.4v1.4h-2.4z"/>
+  <path d="M10.8 6.6v1.1c0 1-1.9 1.7-1.9 3.5v5.1a1.7 1.7 0 0 0 1.7 1.7h2.8a1.7 1.7 0 0 0 1.7-1.7v-5.1c0-1.8-1.9-2.5-1.9-3.5V6.6"/>
+  <!-- cycle arrows -->
+  <path d="M4.2 16.5A9 9 0 0 1 4.2 7.5"/>
+  <path d="M4.2 7.5 1.7 8.6"/>
+  <path d="M4.2 7.5 4.9 10.2"/>
+  <path d="M19.8 7.5A9 9 0 0 1 19.8 16.5"/>
+  <path d="M19.8 16.5 22.3 15.4"/>
+  <path d="M19.8 16.5 19.1 13.8"/>
 </svg>

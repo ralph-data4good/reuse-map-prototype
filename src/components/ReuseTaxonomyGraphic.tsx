@@ -79,7 +79,12 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
                   className="flex min-h-[3.75rem] flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-1.5 text-center font-semibold leading-tight text-white"
                   style={{ backgroundColor: getCategoryColor(cat) }}
                 >
-                  <CategoryIconBadge category={cat} size="md" />
+                  <CategoryIconBadge
+                    category={cat}
+                    size="md"
+                    iconColor="#ffffff"
+                    className="border-white/40 bg-white/25"
+                  />
                   <span className="text-[9px] leading-tight sm:text-[10px]">{cat}</span>
                 </div>
               ) : (

@@ -85,7 +85,7 @@ export function CategoryIconBadge({
   return (
     <span
       className={cn(
-        "flex shrink-0 items-center justify-center bg-white shadow-sm",
+        "flex shrink-0 items-center justify-center border border-white/45 bg-white/55 shadow-sm backdrop-blur-[2px]",
         badgeSize,
         className
       )}

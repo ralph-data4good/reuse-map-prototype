@@ -19,19 +19,18 @@ function esc(s: string): string {
   );
 }
 
-// Teardrop marker with a white disc + category-colored icon for legibility at
-// map scale (outline icons read poorly when tiny and white-on-gold).
+// Teardrop marker with a white category glyph on the category color (matches pin SVG set).
 function markerElement(color: string, category?: string | null): HTMLElement {
   const el = document.createElement("div");
   el.style.cursor = "pointer";
-  const icon = categoryIconMarkup(category, color, 15, { strokeScale: 1.5 });
+  const icon = categoryIconMarkup(category, "#ffffff", 17, { strokeScale: 1.1 });
   el.innerHTML = `
     <div style="position:relative;width:34px;height:44px;">
       <svg width="34" height="44" viewBox="0 0 34 44" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.18));">
         <path d="M17 0C7.6 0 0 7.6 0 17c0 11.9 17 27 17 27s17-15.1 17-27C34 7.6 26.4 0 17 0z"
           fill="${color}" stroke="white" stroke-width="2"/>
       </svg>
-      <div style="position:absolute;left:50%;top:5px;transform:translateX(-50%);pointer-events:none;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,0.12);">
+      <div style="position:absolute;left:50%;top:6px;transform:translateX(-50%);pointer-events:none;display:flex;align-items:center;justify-content:center;width:21px;height:21px;">
         ${icon}
       </div>
     </div>`;
