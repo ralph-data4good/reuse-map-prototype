@@ -103,12 +103,15 @@ export default async function SolutionDetailPage({ params }: PageProps) {
   if (!solution) notFound();
 
   const ld = jsonLd(solution);
+  // Escape `<` so string fields (name/description from the DB) cannot break out
+  // of the <script> element via a literal "</script>" sequence.
+  const ldJson = JSON.stringify(ld).replace(/</g, "\\u003c");
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+        dangerouslySetInnerHTML={{ __html: ldJson }}
       />
       <SolutionDetailView solution={solution} />
     </>

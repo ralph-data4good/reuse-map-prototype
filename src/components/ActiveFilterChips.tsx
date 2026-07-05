@@ -6,6 +6,22 @@ import type { Filters } from "@/lib/types";
 
 type Chip = { key: string; label: string; onRemove: () => void };
 
+/** Filters whose value is a string[] of independently-removable selections. */
+type ListFilterKey = Extract<
+  {
+    [K in keyof Filters]: Filters[K] extends string[] ? K : never;
+  }[keyof Filters],
+  string
+>;
+
+const LIST_FILTER_GROUPS: { field: ListFilterKey; keyPrefix: string }[] = [
+  { field: "countries", keyPrefix: "country" },
+  { field: "categories", keyPrefix: "category" },
+  { field: "subcategories", keyPrefix: "subcategory" },
+  { field: "natures", keyPrefix: "nature" },
+  { field: "affiliations", keyPrefix: "affiliation" },
+];
+
 function buildFilterChips(
   filters: Filters,
   onChange: (next: Filters) => void
@@ -20,65 +36,19 @@ function buildFilterChips(
     });
   }
 
-  filters.countries.forEach((country) => {
-    chips.push({
-      key: `country-${country}`,
-      label: country,
-      onRemove: () =>
-        onChange({
-          ...filters,
-          countries: filters.countries.filter((c) => c !== country),
-        }),
-    });
-  });
-
-  filters.categories.forEach((category) => {
-    chips.push({
-      key: `category-${category}`,
-      label: category,
-      onRemove: () =>
-        onChange({
-          ...filters,
-          categories: filters.categories.filter((c) => c !== category),
-        }),
-    });
-  });
-
-  filters.subcategories.forEach((sub) => {
-    chips.push({
-      key: `subcategory-${sub}`,
-      label: sub,
-      onRemove: () =>
-        onChange({
-          ...filters,
-          subcategories: filters.subcategories.filter((s) => s !== sub),
-        }),
-    });
-  });
-
-  filters.natures.forEach((nature) => {
-    chips.push({
-      key: `nature-${nature}`,
-      label: nature,
-      onRemove: () =>
-        onChange({
-          ...filters,
-          natures: filters.natures.filter((n) => n !== nature),
-        }),
-    });
-  });
-
-  filters.affiliations.forEach((affiliation) => {
-    chips.push({
-      key: `affiliation-${affiliation}`,
-      label: affiliation,
-      onRemove: () =>
-        onChange({
-          ...filters,
-          affiliations: filters.affiliations.filter((a) => a !== affiliation),
-        }),
-    });
-  });
+  for (const { field, keyPrefix } of LIST_FILTER_GROUPS) {
+    for (const value of filters[field]) {
+      chips.push({
+        key: `${keyPrefix}-${value}`,
+        label: value,
+        onRemove: () =>
+          onChange({
+            ...filters,
+            [field]: filters[field].filter((v) => v !== value),
+          }),
+      });
+    }
+  }
 
   return chips;
 }

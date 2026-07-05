@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import type { ViewMode } from "@/components/ViewToggle";
+import type { ViewMode } from "@/lib/url-state";
 import { toggleCategoryFilter } from "@/lib/reuse-categories";
 import {
   buildCountryLookups,

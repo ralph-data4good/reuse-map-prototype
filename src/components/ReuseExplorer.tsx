@@ -33,6 +33,8 @@ import {
 } from "@/lib/motion";
 import { contributeUrl } from "@/lib/contribute-link";
 import { solutionDetailPath } from "@/lib/solution-paths";
+import { safeStorageGet, safeStorageSet } from "@/lib/safe-storage";
+import { cn } from "@/lib/utils";
 
 // Map view is client-only (Mapbox touches the DOM), so load it without SSR.
 const MapView = dynamic(
@@ -46,6 +48,9 @@ const MapView = dynamic(
     ),
   }
 );
+
+/** sessionStorage key for the hero classification-matrix expand/collapse state. */
+const MATRIX_EXPANDED_KEY = "reuse-matrix-expanded";
 
 export function ReuseExplorer() {
   const router = useRouter();
@@ -74,7 +79,7 @@ export function ReuseExplorer() {
 
   const [showHowTo, setShowHowTo] = useState(() => {
     if (typeof window === "undefined") return false;
-    return localStorage.getItem(HOWTO_COLLAPSED_KEY) !== "true";
+    return safeStorageGet("local", HOWTO_COLLAPSED_KEY) !== "true";
   });
   const [showMatrix, setShowMatrix] = useState(false);
   const [refineHighlight, setRefineHighlight] = useState(false);
@@ -82,11 +87,11 @@ export function ReuseExplorer() {
 
   const setHowToExpanded = useCallback((expanded: boolean) => {
     setShowHowTo(expanded);
-    localStorage.setItem(HOWTO_COLLAPSED_KEY, expanded ? "false" : "true");
+    safeStorageSet("local", HOWTO_COLLAPSED_KEY, expanded ? "false" : "true");
   }, []);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("reuse-matrix-expanded");
+    const stored = safeStorageGet("session", MATRIX_EXPANDED_KEY);
     if (stored !== null) {
       setShowMatrix(stored === "true");
       return;
@@ -98,7 +103,7 @@ export function ReuseExplorer() {
   const toggleMatrix = () => {
     setShowMatrix((v) => {
       const next = !v;
-      sessionStorage.setItem("reuse-matrix-expanded", String(next));
+      safeStorageSet("session", MATRIX_EXPANDED_KEY, String(next));
       return next;
     });
   };
@@ -231,71 +236,91 @@ export function ReuseExplorer() {
         <span className="font-semibold text-ink">Reuse Solutions</span>
       </nav>
 
-      {/* Compact hero: title, short intro, CTAs; matrix behind toggle */}
+      {/* Hero: matrix (left col) + heading/intro/how-to (right col) on desktop;
+          single column on mobile ordered heading -> intro -> steps -> matrix. */}
       <div className="mb-4 overflow-hidden rounded-3xl bg-gradient-to-br from-navy to-navy-hover p-5 shadow-pop sm:p-6">
-        <div className="max-w-3xl">
-          <h1 className="font-heading text-2xl font-bold leading-tight text-white sm:text-3xl">
-            {COPY.pageTitle}
-          </h1>
-          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
-            {COPY.intro}
-          </p>
-          <p className="mt-1 text-sm leading-relaxed text-white/85 sm:text-base">
-            {COPY.introSecondary}
-          </p>
-
-          {showMatrix && (
-            <div className="mt-4 max-w-md">
-              <ReuseTaxonomyGraphic />
-            </div>
+        <div
+          className={cn(
+            "grid grid-cols-1 gap-5",
+            showMatrix &&
+              "lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start"
           )}
-
-          {showHowTo && (
-            <div id="how-to-panel" className="mt-4">
-              <HowToSteps
-                steps={COPY.howToSteps}
-                onStepAction={handleHowToStep}
+        >
+          {/* Matrix column (only when expanded) */}
+          {showMatrix && (
+            <div className="order-last lg:order-first">
+              <ReuseTaxonomyGraphic
+                onCollapse={toggleMatrix}
+                collapseControlId="matrix-toggle"
               />
             </div>
           )}
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={toggleMatrix}
-              aria-expanded={showMatrix}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
-            >
-              {showMatrix ? "Hide classification" : COPY.matrixToggle}
-              {showMatrix ? (
-                <ChevronUp className="h-4 w-4" aria-hidden />
-              ) : (
-                <ChevronDown className="h-4 w-4" aria-hidden />
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => setHowToExpanded(!showHowTo)}
-              aria-expanded={showHowTo}
-              aria-controls="how-to-panel"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
-            >
-              {showHowTo ? "Show less" : "How to use this directory"}
-              {showHowTo ? (
-                <ChevronUp className="h-4 w-4" aria-hidden />
-              ) : (
-                <ChevronDown className="h-4 w-4" aria-hidden />
-              )}
-            </button>
-            {!showHowTo && (
+          {/* Right column: heading, intro, how-to disclosure */}
+          <div className="order-first min-w-0 lg:order-last">
+            <h1 className="font-heading text-2xl font-bold leading-tight text-white sm:text-3xl">
+              {COPY.pageTitle}
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
+              {COPY.intro}
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-white/85 sm:text-base">
+              {COPY.introSecondary}
+            </p>
+
+            {/* How-to disclosure: single toggle at its own top edge */}
+            <div className="mt-4">
               <button
                 type="button"
-                onClick={scrollToControls}
-                className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+                onClick={() => setHowToExpanded(!showHowTo)}
+                aria-expanded={showHowTo}
+                aria-controls="how-to-panel"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
               >
-                Explore the map
-                <ArrowDown className="h-4 w-4" aria-hidden />
+                {showHowTo ? "Show less" : "How to use this directory"}
+                {showHowTo ? (
+                  <ChevronUp className="h-4 w-4" aria-hidden />
+                ) : (
+                  <ChevronDown className="h-4 w-4" aria-hidden />
+                )}
               </button>
+
+              {showHowTo && (
+                <div id="how-to-panel">
+                  <HowToSteps
+                    steps={COPY.howToSteps}
+                    onStepAction={handleHowToStep}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Re-open matrix + primary CTA (only shown when their panel is closed) */}
+            {(!showMatrix || !showHowTo) && (
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                {!showMatrix && (
+                  <button
+                    type="button"
+                    onClick={toggleMatrix}
+                    aria-expanded={false}
+                    id="matrix-toggle"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+                  >
+                    {COPY.matrixToggle}
+                    <ChevronDown className="h-4 w-4" aria-hidden />
+                  </button>
+                )}
+                {!showHowTo && (
+                  <button
+                    type="button"
+                    onClick={scrollToControls}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-sm font-semibold text-white motion-safe:transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+                  >
+                    Explore the map
+                    <ArrowDown className="h-4 w-4" aria-hidden />
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>

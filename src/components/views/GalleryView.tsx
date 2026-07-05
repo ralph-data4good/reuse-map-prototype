@@ -11,6 +11,7 @@ import { TruncatedTitle } from "@/components/TruncatedTitle";
 import { SubCategoryTerms } from "@/components/SubCategoryTerms";
 import { providerLink } from "@/lib/provider-links";
 import { solutionDetailPath } from "@/lib/solution-paths";
+import { providerDisplay } from "@/lib/solution-display";
 import { categoryOverlayGradient } from "@/lib/reuse-categories";
 import type { Filters, ReuseSolution } from "@/lib/types";
 
@@ -25,11 +26,7 @@ function GalleryCard({
 }) {
   const location = [s.city, s.country].filter(Boolean).join(", ");
   const hasVisitLink = Boolean(providerLink(s.serviceProviderName));
-  const providerTitle = s.serviceProviderName?.trim() || s.name;
-  const description =
-    s.serviceProviderName?.trim() && s.name.trim() !== s.serviceProviderName.trim()
-      ? s.name
-      : null;
+  const { title: providerTitle, secondary: description } = providerDisplay(s);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-card border border-border bg-white shadow-card motion-safe:transition-shadow motion-safe:hover:shadow-pop">

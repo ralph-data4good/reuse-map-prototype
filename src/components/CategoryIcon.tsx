@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import { CATEGORY_ICON_SVGS } from "@/lib/category-icon-svgs.generated";
 import { getCategoryColor } from "@/lib/reuse-categories";
 import { cn } from "@/lib/utils";
@@ -41,7 +42,11 @@ export function CategoryIcon({
       className={className}
       aria-hidden
     >
-      <g dangerouslySetInnerHTML={{ __html: data.inner }} />
+      <g>
+        {data.elements.map((el, i) =>
+          createElement(el.tag, { key: i, ...el.attrs })
+        )}
+      </g>
     </svg>
   );
 }

@@ -8,6 +8,7 @@ import { TableTrustIndicator } from "@/components/TrustBadge";
 import { VisitProviderLink } from "@/components/VisitProviderLink";
 import { SubCategoryTerms } from "@/components/SubCategoryTerms";
 import { solutionDetailPath } from "@/lib/solution-paths";
+import { providerDisplay } from "@/lib/solution-display";
 import type { SortOption } from "@/lib/sort-solutions";
 import { cn } from "@/lib/utils";
 import type { Filters, ReuseSolution } from "@/lib/types";
@@ -110,12 +111,8 @@ export function TableView({
         </thead>
         <tbody>
           {items.map((s) => {
-            const providerTitle = s.serviceProviderName?.trim() || s.name;
-            const description =
-              s.serviceProviderName?.trim() &&
-              s.name.trim() !== s.serviceProviderName.trim()
-                ? s.name
-                : null;
+            const { title: providerTitle, secondary: description } =
+              providerDisplay(s);
 
             return (
               <tr

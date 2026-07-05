@@ -26,7 +26,7 @@ const BADGE_ICONS: Record<
   share: Plus,
 };
 
-function StepBadgeIcon({ kind, index }: { kind: StepBadge; index: number }) {
+function StepBadgeIcon({ kind }: { kind: StepBadge }) {
   if (kind === "start") {
     return (
       <span
@@ -50,13 +50,11 @@ function StepBadgeIcon({ kind, index }: { kind: StepBadge; index: number }) {
 
 function StepCard({
   step,
-  index,
   badge,
   onActivate,
   className,
 }: {
   step: HowToStep;
-  index: number;
   badge: StepBadge;
   onActivate: () => void;
   className?: string;
@@ -75,7 +73,7 @@ function StepCard({
         className
       )}
     >
-      <StepBadgeIcon kind={badge} index={index} />
+      <StepBadgeIcon kind={badge} />
       <div className="min-w-0 pt-0.5">
         <p className="flex items-center gap-1 text-sm font-semibold leading-snug text-white">
           <span>{step.title}</span>
@@ -113,7 +111,6 @@ export function HowToSteps({
         <li className="list-none">
           <StepCard
             step={steps[0]}
-            index={0}
             badge={STEP_BADGES[0]}
             onActivate={() => onStepAction(0)}
           />
@@ -121,13 +118,11 @@ export function HowToSteps({
         <li className="grid list-none grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
           <StepCard
             step={steps[1]}
-            index={1}
             badge={STEP_BADGES[1]}
             onActivate={() => onStepAction(1)}
           />
           <StepCard
             step={steps[2]}
-            index={2}
             badge={STEP_BADGES[2]}
             onActivate={() => onStepAction(2)}
           />
@@ -135,13 +130,11 @@ export function HowToSteps({
         <li className="grid list-none grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
           <StepCard
             step={steps[3]}
-            index={3}
             badge={STEP_BADGES[3]}
             onActivate={() => onStepAction(3)}
           />
           <StepCard
             step={steps[4]}
-            index={4}
             badge={STEP_BADGES[4]}
             onActivate={() => onStepAction(4)}
           />

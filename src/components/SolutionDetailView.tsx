@@ -10,6 +10,7 @@ import { SolutionImage } from "@/components/SolutionImage";
 import { categoryOverlayGradient } from "@/lib/reuse-categories";
 import { providerLink } from "@/lib/provider-links";
 import { EXPLORER_PATH } from "@/lib/contribute-link";
+import { providerDisplay } from "@/lib/solution-display";
 import { formatDate } from "@/lib/utils";
 import type { ReuseSolution } from "@/lib/types";
 
@@ -33,8 +34,8 @@ function DetailField({
 
 export function SolutionDetailView({ solution }: { solution: ReuseSolution }) {
   const location = [solution.city, solution.country].filter(Boolean).join(", ");
-  const providerTitle =
-    solution.serviceProviderName?.trim() || solution.name;
+  const { title: providerTitle, secondary: solutionSubtitle } =
+    providerDisplay(solution);
   const websiteUrl = providerLink(solution.serviceProviderName);
   const updatedLabel = formatDate(solution.lastUpdated ?? solution.updatedAt);
 
@@ -95,11 +96,9 @@ export function SolutionDetailView({ solution }: { solution: ReuseSolution }) {
                 <h1 className="font-heading text-2xl font-bold leading-tight text-ink sm:text-3xl">
                   {providerTitle}
                 </h1>
-                {solution.serviceProviderName &&
-                  solution.name.trim() !==
-                    solution.serviceProviderName.trim() && (
-                    <p className="text-base text-muted">{solution.name}</p>
-                  )}
+                {solutionSubtitle && (
+                  <p className="text-base text-muted">{solutionSubtitle}</p>
+                )}
                 {location && (
                   <p className="text-sm text-muted">{location}</p>
                 )}

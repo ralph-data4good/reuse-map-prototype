@@ -336,19 +336,24 @@ for (const r of TOOLTIP_RECORDS) {
   else if (r.subCategory) SUB_BY_LABEL.set(r.subCategory, r);
 }
 
-function resolve(map: Map<string, TooltipRecord>, label?: string | null) {
-  if (!label) return undefined;
+function resolve(
+  map: Map<string, TooltipRecord>,
+  label?: string | null
+): TooltipRecord | null {
+  if (!label) return null;
   const key = label.trim();
-  return map.get(key) ?? map.get(LABEL_ALIASES[key] ?? "");
+  return map.get(key) ?? map.get(LABEL_ALIASES[key] ?? "") ?? null;
 }
 
 /** Full record for a main category by its exact label (alias-aware). */
-export function getCategoryRecord(label?: string | null) {
+export function getCategoryRecord(label?: string | null): TooltipRecord | null {
   return resolve(MAIN_BY_LABEL, label);
 }
 
 /** Full record for a sub-category by its exact label (alias-aware). */
-export function getSubCategoryRecord(label?: string | null) {
+export function getSubCategoryRecord(
+  label?: string | null
+): TooltipRecord | null {
   return resolve(SUB_BY_LABEL, label);
 }
 
@@ -363,7 +368,7 @@ export function getSubCategoryDefinition(label?: string | null): string {
 }
 
 /** Stable data key for an element, preferring cursorKey, then id. */
-export function getStableKey(label?: string | null): string | undefined {
+export function getStableKey(label?: string | null): string | null {
   const rec = resolve(MAIN_BY_LABEL, label) ?? resolve(SUB_BY_LABEL, label);
-  return rec?.cursorKey ?? rec?.id;
+  return rec?.cursorKey ?? rec?.id ?? null;
 }

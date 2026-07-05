@@ -3,8 +3,7 @@
 import { forwardRef } from "react";
 import { Map, LayoutGrid, Table2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-export type ViewMode = "map" | "gallery" | "table";
+import type { ViewMode } from "@/lib/url-state";
 
 const OPTIONS: { value: ViewMode; label: string; icon: typeof Map }[] = [
   { value: "map", label: "Map", icon: Map },

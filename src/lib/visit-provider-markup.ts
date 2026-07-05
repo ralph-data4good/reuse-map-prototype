@@ -1,12 +1,7 @@
 import { providerLink } from "@/lib/provider-links";
 import { solutionDetailPath } from "@/lib/solution-paths";
 import { BASE_PATH } from "@/lib/utils";
-
-function esc(s: string): string {
-  return s.replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string
-  );
-}
+import { escapeHtml as esc } from "@/lib/html";
 
 function detailHref(slug: string): string {
   return `${BASE_PATH}${solutionDetailPath(slug)}/`;

@@ -1,4 +1,3 @@
-import type { ViewMode } from "@/components/ViewToggle";
 import {
   DEFAULT_SORT,
   parseSortOption,
@@ -13,6 +12,9 @@ import {
 import { AFFILIATIONS, NATURES_OF_SERVICE, SUB_CATEGORIES } from "@/lib/taxonomy";
 import { EMPTY_FILTERS, type Filters } from "@/lib/types";
 import type { ReuseSolution } from "@/lib/types";
+
+/** The three explorer result views. Owned here alongside ExplorerUrlState. */
+export type ViewMode = "map" | "gallery" | "table";
 
 export type ExplorerUrlState = {
   view: ViewMode;

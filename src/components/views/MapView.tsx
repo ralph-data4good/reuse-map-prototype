@@ -20,6 +20,7 @@ import { ensureCategoryPinImages } from "@/lib/map-pin-images";
 import { mapCameraDuration } from "@/lib/motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { solutionDetailPath } from "@/lib/solution-paths";
+import { escapeHtml as esc } from "@/lib/html";
 import {
   contributePrefillFromFilters,
   contributeUrl,
@@ -32,12 +33,6 @@ const SOURCE_ID = "solutions";
 const CLUSTER_LAYER = "solutions-clusters";
 const CLUSTER_COUNT_LAYER = "solutions-cluster-count";
 const UNCLUSTERED_LAYER = "solutions-unclustered";
-
-function esc(s: string): string {
-  return s.replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string
-  );
-}
 
 function popupHTML(s: ReuseSolution): string {
   const color = getCategoryColor(s.primaryCategory);

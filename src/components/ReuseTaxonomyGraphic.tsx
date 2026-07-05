@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { ChevronUp } from "lucide-react";
 import { CategoryIconBadge } from "@/components/CategoryIcon";
 import { getCategoryColor } from "@/lib/reuse-categories";
 import { getCategoryDefinition } from "@/lib/tooltips";
@@ -26,7 +27,16 @@ const MATRIX: { asset: string; cells: (string | null)[] }[] = [
 const EMPTY_MATRIX_CELL_TOOLTIP =
   "Not a category in the framework: packaging with transfer of ownership is covered under Packaging Reuse.";
 
-export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
+export function ReuseTaxonomyGraphic({
+  className,
+  onCollapse,
+  collapseControlId,
+}: {
+  className?: string;
+  /** When provided, renders a collapse chevron in the card header. */
+  onCollapse?: () => void;
+  collapseControlId?: string;
+}) {
   return (
     <div
       className={cn(
@@ -34,12 +44,28 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
         className
       )}
     >
-      <p className="text-center font-heading text-sm font-bold uppercase tracking-[0.12em] text-navy">
-        Reuse Classification Matrix
-      </p>
-      <p className="mb-3 mt-1 text-center text-[11px] leading-snug text-muted">
-        Classifying reuse solutions by asset type and ownership model.
-      </p>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="text-center font-heading text-sm font-bold uppercase tracking-[0.12em] text-navy">
+            Reuse Classification Matrix
+          </p>
+          <p className="mb-3 mt-1 text-center text-[11px] leading-snug text-muted">
+            Classifying reuse solutions by asset type and ownership model.
+          </p>
+        </div>
+        {onCollapse && (
+          <button
+            type="button"
+            onClick={onCollapse}
+            id={collapseControlId}
+            aria-expanded={true}
+            aria-label="Hide classification matrix"
+            className="shrink-0 rounded-full p-1 text-navy/70 motion-safe:transition-colors hover:bg-navy/5 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/40"
+          >
+            <ChevronUp className="h-4 w-4" aria-hidden />
+          </button>
+        )}
+      </div>
 
       <div
         className="grid gap-1.5 text-[10px] sm:text-[11px]"

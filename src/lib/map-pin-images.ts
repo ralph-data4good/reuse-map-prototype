@@ -6,7 +6,7 @@ import {
   type ReuseCategory,
 } from "@/lib/reuse-categories";
 import { CATEGORY_ICON_SVGS } from "@/lib/category-icon-svgs.generated";
-import type mapboxgl from "mapbox-gl";
+import type { Map as MapboxMap } from "mapbox-gl";
 
 /** Display size in CSS px — matches the pre-cluster HTML markers. */
 const PIN_W = 34;
@@ -58,7 +58,7 @@ function rasterizePin(img: HTMLImageElement): ImageData {
   return ctx.getImageData(0, 0, canvas.width, canvas.height);
 }
 
-function addPinImage(map: mapboxgl.Map, id: string, bitmap: ImageData): void {
+function addPinImage(map: MapboxMap, id: string, bitmap: ImageData): void {
   if (map.hasImage(id)) {
     map.removeImage(id);
   }
@@ -67,7 +67,7 @@ function addPinImage(map: mapboxgl.Map, id: string, bitmap: ImageData): void {
 
 /** Register category pin images on a Mapbox map (id = directory_type slug). */
 export async function ensureCategoryPinImages(
-  map: mapboxgl.Map
+  map: MapboxMap
 ): Promise<void> {
   await Promise.all(
     REUSE_CATEGORY_NAMES.map(async (name) => {
