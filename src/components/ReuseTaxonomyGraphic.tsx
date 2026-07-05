@@ -49,17 +49,19 @@ export function ReuseTaxonomyGraphic({ className }: { className?: string }) {
         {OWNERSHIP.map((h) => (
           <div
             key={h}
-            className="flex items-center justify-center rounded-md bg-navy/5 px-1 py-1 text-center font-semibold uppercase leading-tight tracking-wide text-navy"
+            className="flex flex-col items-center justify-center gap-0.5 rounded-md bg-navy/5 px-1 py-1 text-center font-semibold uppercase leading-tight tracking-wide text-navy"
           >
-            {h}
+            <CategoryIcon category={h} className="h-3.5 w-3.5 text-navy" />
+            <span className="text-[8px] sm:text-[9px]">{h}</span>
           </div>
         ))}
 
         {/* Asset-type rows */}
         {MATRIX.map((row) => (
           <Fragment key={row.asset}>
-            <div className="flex items-center justify-center rounded-md bg-navy/5 px-1 py-1 text-center font-semibold uppercase leading-tight tracking-wide text-navy">
-              {row.asset}
+            <div className="flex flex-col items-center justify-center gap-0.5 rounded-md bg-navy/5 px-1 py-1 text-center font-semibold uppercase leading-tight tracking-wide text-navy">
+              <CategoryIcon category={row.asset} className="h-3.5 w-3.5 text-navy" />
+              <span className="text-[8px] sm:text-[9px]">{row.asset}</span>
             </div>
             {row.cells.map((cat, i) =>
               cat ? (

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-labelledby="title desc">
+  <title id="title">Packaging Reuse</title>
+  <desc id="desc">A bottle with circular arrows showing packaging being reused.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9.25 9.25h5.5"/>
+    <path d="M10 9.25V7.1h4v2.15"/>
+    <path d="M9 9.25h6l.65 8.9A1.7 1.7 0 0 1 13.95 20h-3.9a1.7 1.7 0 0 1-1.7-1.85L9 9.25Z"/>
+    <path d="M5.25 10.75a7.25 7.25 0 0 1 11.2-5.9"/>
+    <path d="M16.75 4.75h-3.05"/>
+    <path d="M16.75 4.75v3.05"/>
+    <path d="M18.75 13.25a7.25 7.25 0 0 1-11.2 5.9"/>
+    <path d="M7.25 19.25h3.05"/>
+    <path d="M7.25 19.25V16.2"/>
+  </g>
+</svg>

@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "gen:images": "node scripts/generate-provider-images.mjs",
-    "predev": "node scripts/generate-provider-images.mjs",
-    "prebuild": "node scripts/generate-provider-images.mjs",
+    "gen:icons": "node scripts/generate-category-icons.mjs",
+    "predev": "node scripts/generate-provider-images.mjs && node scripts/generate-category-icons.mjs",
+    "prebuild": "node scripts/generate-provider-images.mjs && node scripts/generate-category-icons.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-labelledby="title desc">
+  <title id="title">Packaging</title>
+  <desc id="desc">A bottle and jar representing packaging.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5.75 8.75h5"/>
+    <path d="M6.45 8.75V6.5h3.6v2.25"/>
+    <path d="M5.5 8.75H11l.6 9.2A1.8 1.8 0 0 1 9.8 19.9H6.7a1.8 1.8 0 0 1-1.8-1.95l.6-9.2Z"/>
+    <path d="M14.5 11h4.5"/>
+    <path d="M14.2 11h5.1l.45 6.9a1.85 1.85 0 0 1-1.85 2h-2.3a1.85 1.85 0 0 1-1.85-2l.45-6.9Z"/>
+    <path d="M15.25 8.75h3.5V11h-3.5z"/>
+  </g>
+</svg>

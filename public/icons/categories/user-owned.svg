@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-labelledby="title desc">
+  <title id="title">User-Owned</title>
+  <desc id="desc">A single user icon showing ownership by the user.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 11a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2Z"/>
+    <path d="M5.5 20.25v-1.2A6.5 6.5 0 0 1 12 12.55a6.5 6.5 0 0 1 6.5 6.5v1.2"/>
+  </g>
+</svg>

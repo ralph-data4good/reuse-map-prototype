@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-labelledby="title desc">
+  <title id="title">System-Owned</title>
+  <desc id="desc">A group inside a circular arrow showing assets managed by a reuse system.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8.25 10a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z"/>
+    <path d="M15.75 10a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z"/>
+    <path d="M12 11a1.9 1.9 0 1 0 0-3.8A1.9 1.9 0 0 0 12 11Z"/>
+    <path d="M5.25 17.25v-.75a2.75 2.75 0 0 1 5.5 0v.75"/>
+    <path d="M13.25 17.25v-.75a2.75 2.75 0 0 1 5.5 0v.75"/>
+    <path d="M9.25 18.5a7.25 7.25 0 0 0 9-3.25"/>
+    <path d="M18.25 15.25v2.35"/>
+    <path d="M18.25 15.25h-2.35"/>
+    <path d="M14.75 5.5a7.25 7.25 0 0 0-9 3.25"/>
+    <path d="M5.75 8.75V6.4"/>
+    <path d="M5.75 8.75H8.1"/>
+  </g>
+</svg>
