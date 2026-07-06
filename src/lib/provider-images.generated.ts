@@ -2,11 +2,13 @@
 // Maps a slugified service-provider name to its image in /public/providers.
 export const PROVIDER_IMAGES: Record<string, string> = {
   "alner": "/providers/Alner.webp",
+  "crockerybankforeveryone": "/providers/Crockery_bank_for_Everyone.webp",
   "cupable": "/providers/Cupable.webp",
   "infinitybox": "/providers/Infinity_Box.webp",
   "juanazeroexpress": "/providers/Juana_Zero_Express.webp",
   "kkpkp": "/providers/KKPKP.webp",
   "muuse": "/providers/Muuse.webp",
+  "rnisargfoundation": "/providers/RNisarg_Foundation.webp",
   "recube": "/providers/ReCube.webp",
   "wastepickersofbangalore": "/providers/Wastepickers_of_Bangalore.webp",
   "weuse": "/providers/WeUse.webp",

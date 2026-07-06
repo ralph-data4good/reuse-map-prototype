@@ -12,7 +12,7 @@ export const PROVIDER_LINKS: Record<string, string> = {
   irefill: "https://irefill.org/",
   unileversmartfill: "https://smartfill.store/",
   hepicircle: "https://hepicircle.com/",
-  kkpkpwastepickercollectiveofpune: "https://kkpkp-pune.org/",
+  kkpkpwastepickercollectiveofpune: "https://swachcoop.com/initiatives/v-collect/",
   cupable: "https://www.linkedin.com/company/cupable/",
   infinitybox: "https://getinfinitybox.com/",
   crockerybankforeveryone: "https://www.facebook.com/crockerybankforeveryone/",
