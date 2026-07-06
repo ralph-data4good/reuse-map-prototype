@@ -13,6 +13,16 @@ export const PROVIDER_LINKS: Record<string, string> = {
   unileversmartfill: "https://smartfill.store/",
   hepicircle: "https://hepicircle.com/",
   kkpkpwastepickercollectiveofpune: "https://kkpkp-pune.org/",
+  cupable: "https://www.linkedin.com/company/cupable/",
+  infinitybox: "https://getinfinitybox.com/",
+  crockerybankforeveryone: "https://www.facebook.com/crockerybankforeveryone/",
+  greenpeacephilippinesinnovationcatalystlocalgovernments:
+    "https://www.greenpeace.org/philippines/publication/68199/kuha-sa-tingi/",
+  weuse: "https://www.weuse.hk/",
+  juanazeroexpress: "http://www.motherearthphil.org/",
+  muuse: "https://www.muuse.io/",
+  rnisargfoundation:
+    "https://sway.cloud.microsoft/mfslexQgAs71N5EU?ref=Link&loc=mysways",
 };
 
 /** Resolve a provider website URL from the service-provider display name. */

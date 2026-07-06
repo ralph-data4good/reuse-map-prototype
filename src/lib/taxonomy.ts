@@ -34,6 +34,7 @@ export const NATURES_OF_SERVICE: NatureOfService[] = [
   { label: "Running Refill Station/ Store", description: "" /* TODO */ },
   { label: "Supporting retailers to set up refill service", description: "" /* TODO */ },
   { label: "Collection Service to enable product reuse", description: "" /* TODO */ },
+  { label: "Access to Reusable Product Alternatives", description: "" /* TODO */ },
 ];
 
 export function getNature(label?: string | null): NatureOfService | undefined {

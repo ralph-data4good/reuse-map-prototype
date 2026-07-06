@@ -110,10 +110,10 @@ export function SolutionDetailView({ solution }: { solution: ReuseSolution }) {
 
               {solution.description && (
                 <section>
-                  <h2 className="font-heading text-lg font-semibold text-ink">
+                  <h2 className="font-heading text-base font-semibold text-ink sm:text-lg">
                     About
                   </h2>
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-ink/90">
+                  <p className="mt-1.5 max-w-prose text-[13px] leading-relaxed text-ink/80 sm:text-sm">
                     {solution.description}
                   </p>
                 </section>
