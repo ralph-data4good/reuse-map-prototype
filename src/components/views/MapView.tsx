@@ -186,6 +186,9 @@ export function MapView({
       style: "mapbox://styles/mapbox/light-v11",
       center: MAP_DEFAULTS.center,
       zoom: MAP_DEFAULTS.zoom,
+      // Flat projection: the globe's curvature at low zoom skews screen<->lnglat
+      // mapping, which made cluster-expansion camera targets land off-center.
+      projection: "mercator",
     });
     mapRef.current = map;
     map.addControl(new mapboxgl.NavigationControl(), "top-right");
@@ -199,6 +202,9 @@ export function MapView({
           data: solutionsToGeoJSON([]),
           cluster: true,
           clusterRadius: 45,
+          // Beyond this zoom points render individually, so a cluster click can
+          // always resolve to visible pins rather than another cluster.
+          clusterMaxZoom: 14,
         });
 
         map.addLayer({
@@ -249,25 +255,53 @@ export function MapView({
         });
 
         map.on("click", CLUSTER_LAYER, (e) => {
-          const features = map.queryRenderedFeatures(e.point, {
-            layers: [CLUSTER_LAYER],
-          });
-          if (!features.length) return;
-          const clusterId = features[0].properties?.cluster_id;
-          const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource;
+          // Use the clicked cluster feature directly (layer-scoped event).
+          const feature = e.features?.[0];
+          if (!feature) return;
+          const clusterId = feature.properties?.cluster_id;
           if (clusterId == null) return;
-          source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-            if (err || zoom == null) return;
-            const coords = (features[0].geometry as GeoJSON.Point).coordinates as [
-              number,
-              number,
-            ];
-            map.easeTo({
-              center: coords,
-              zoom,
-              duration: mapCameraDuration(),
-              essential: !reducedMotion,
-            });
+          const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource;
+
+          // Frame the cluster's actual member points instead of trusting the
+          // expansion zoom, which can over-zoom past the pins for tightly
+          // grouped locations.
+          source.getClusterLeaves(clusterId, Infinity, 0, (err, leaves) => {
+            if (err || !leaves || leaves.length === 0) return;
+            const leafCoords = leaves
+              .map((l) =>
+                l.geometry?.type === "Point"
+                  ? (l.geometry.coordinates as [number, number])
+                  : null
+              )
+              .filter((c): c is [number, number] => c !== null);
+            if (leafCoords.length === 0) return;
+
+            const duration = mapCameraDuration();
+            const bounds = leafCoords.reduce(
+              (b, c) => b.extend(c),
+              new mapboxgl.LngLatBounds(leafCoords[0], leafCoords[0])
+            );
+            const ne = bounds.getNorthEast();
+            const sw = bounds.getSouthWest();
+            const isSinglePoint = ne.lng === sw.lng && ne.lat === sw.lat;
+
+            if (isSinglePoint) {
+              // All members share one location: zoom past clusterMaxZoom so they
+              // resolve into (overlapping) individual pins at that spot.
+              map.easeTo({
+                center: leafCoords[0],
+                zoom: 15,
+                duration,
+                essential: !reducedMotion,
+              });
+            } else {
+              map.fitBounds(bounds, {
+                padding: 80,
+                maxZoom: 16,
+                duration,
+                essential: !reducedMotion,
+              });
+            }
           });
         });
 

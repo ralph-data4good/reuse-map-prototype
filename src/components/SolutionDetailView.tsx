@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BackButton } from "@/components/BackButton";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { TrustBadge } from "@/components/TrustBadge";
 import { VisitProviderButton } from "@/components/VisitProviderButton";
@@ -43,6 +44,9 @@ export function SolutionDetailView({ solution }: { solution: ReuseSolution }) {
     <main className="min-h-screen bg-cream">
       <Header />
       <div className="container py-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <BackButton fallbackHref={EXPLORER_PATH} />
+        </div>
         <nav
           aria-label="Breadcrumb"
           className="mb-4 flex items-center gap-1.5 text-sm"

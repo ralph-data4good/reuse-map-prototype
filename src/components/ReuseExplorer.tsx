@@ -326,15 +326,12 @@ export function ReuseExplorer() {
         </div>
       </div>
 
-      {/* Search + view toggle */}
-      <div ref={controlsRef} className="scroll-mt-20 space-y-4">
+      {/* Search */}
+      <div ref={controlsRef} className="scroll-mt-20">
         <SearchBar
           value={filters.search}
           onChange={(v) => setFilters((f) => ({ ...f, search: v }))}
         />
-        <div className="flex items-center justify-end">
-          <ViewToggle value={view} onChange={setView} />
-        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
@@ -349,6 +346,10 @@ export function ReuseExplorer() {
         />
 
         <section ref={mapResultsRef} id="map-results" className="space-y-4 scroll-mt-20">
+          <div className="sticky top-20 z-30 flex items-center justify-end bg-cream/90 py-2 backdrop-blur">
+            <ViewToggle value={view} onChange={setView} />
+          </div>
+
           <ActiveFilterChips
             filters={filters}
             onChange={setFilters}

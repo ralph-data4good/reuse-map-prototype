@@ -28,6 +28,7 @@ export function SolutionMiniMap({ solution }: { solution: ReuseSolution }) {
       zoom: 11,
       interactive: false,
       attributionControl: false,
+      projection: "mercator",
     });
 
     new mapboxgl.Marker({ color: "#1E3A4C" })

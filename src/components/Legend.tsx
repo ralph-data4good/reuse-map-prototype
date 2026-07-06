@@ -23,7 +23,11 @@ export function Legend({
   onCollapsedChange?: (collapsed: boolean) => void;
   className?: string;
 }) {
+  const totalCategories = REUSE_CATEGORY_LEGEND.length;
   const anyCategoryFiltered = selectedCategories.length > 0;
+  const visibleCount = anyCategoryFiltered
+    ? selectedCategories.length
+    : totalCategories;
 
   return (
     <div
@@ -45,6 +49,16 @@ export function Legend({
           )}
         >
           <span>Pin color by category</span>
+          <span
+            className={cn(
+              "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none tracking-normal",
+              anyCategoryFiltered
+                ? "bg-cream text-navy"
+                : "bg-navy text-white"
+            )}
+          >
+            {anyCategoryFiltered ? `${visibleCount} of ${totalCategories}` : "All"}
+          </span>
           {onCollapsedChange && (
             <ChevronDown
               className={cn(
@@ -75,6 +89,11 @@ export function Legend({
                   type="button"
                   onClick={() => onToggleCategory(row.category)}
                   aria-pressed={active}
+                  title={
+                    active
+                      ? `Hide ${row.category} pins`
+                      : `Show ${row.category} pins`
+                  }
                   className={cn(
                     "flex w-full items-center gap-2 rounded-md px-1 py-1 text-left text-xs text-ink transition-opacity",
                     "hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
