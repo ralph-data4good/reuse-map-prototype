@@ -32,6 +32,7 @@ export interface ReuseCategoryConfig {
 export const REUSE_CATEGORIES: Record<ReuseCategory, ReuseCategoryConfig> = {
   "Packaging Reuse": {
     color: "#355E70",
+    chipTextColor: "#FFFFFF",
     subCategories: [
       "Pre-filled Reuse Systems",
       "Onsite Reuse Systems",
@@ -47,10 +48,12 @@ export const REUSE_CATEGORIES: Record<ReuseCategory, ReuseCategoryConfig> = {
   },
   "Product Reuse": {
     color: "#639B4A",
+    chipTextColor: "#FFFFFF",
     subCategories: ["Product Reuse System"],
   },
   "Use of Reusable Product Alternatives": {
     color: "#B76F47",
+    chipTextColor: "#FFFFFF",
     subCategories: [
       "Reusable Product Alternatives (Self-Maintained)",
       "Reusable Product Alternatives (Service-Maintained)",
@@ -58,6 +61,7 @@ export const REUSE_CATEGORIES: Record<ReuseCategory, ReuseCategoryConfig> = {
   },
   "Transfer-based Reuse": {
     color: "#665096",
+    chipTextColor: "#FFFFFF",
     subCategories: ["Transfer-based Reuse Systems"],
   },
 };
